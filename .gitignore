@@ -39,6 +39,10 @@ cmake_install.cmake
 .vscode/
 *.code-workspace
 
+# Internal dev docs and scripts
+docs/internal/
+InternalTools/
+
 # OS
 Thumbs.db
 Desktop.ini
