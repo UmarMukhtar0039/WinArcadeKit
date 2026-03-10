@@ -1,16 +1,23 @@
 #pragma once
 
+#include <Windows.h>
+
+#include "Application.h"
+
+extern WinArcadeKit::Application* WinArcadeKit::CreateApplication(int argc, char** argv);
+
 namespace WinArcadeKit {
 
     int Main(HINSTANCE hInstance, int argc, char** argv)
     {
+        Application* app = CreateApplication(argc, argv);
+        app->Run(hInstance);
         return 0;
     }
 
 }
 
 #ifdef WAK_DIST
-#include <Windows.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {

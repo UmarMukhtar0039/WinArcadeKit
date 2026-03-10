@@ -13,6 +13,12 @@ set(BUILD_TESTING OFF CACHE BOOL "" FORCE)          # CTest targets (Continuous,
 add_subdirectory(extern/DirectXTK)
 
 # WinArcadeKit static library
-# add_library(WinArcadeKit STATIC)
-# target_include_directories(WinArcadeKit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-# target_link_libraries(WinArcadeKit PUBLIC DirectXTK d3d11.lib d3dcompiler.lib)
+add_library(WinArcadeKit STATIC
+    src/Application.cpp
+    src/AppWindow.cpp
+)
+target_include_directories(WinArcadeKit
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+target_link_libraries(WinArcadeKit PUBLIC DirectXTK d3d11.lib d3dcompiler.lib)
