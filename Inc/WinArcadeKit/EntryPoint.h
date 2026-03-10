@@ -4,9 +4,9 @@
 
 #include "Application.h"
 
-extern WinArcadeKit::Application* WinArcadeKit::CreateApplication(int argc, char** argv);
+extern wak::Application* wak::CreateApplication(int argc, char** argv);
 
-namespace WinArcadeKit {
+namespace wak {
 
     int Main(HINSTANCE hInstance, int argc, char** argv)
     {
@@ -21,14 +21,14 @@ namespace WinArcadeKit {
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
-    return WinArcadeKit::Main(hInstance, __argc, __argv);
+    return wak::Main(hInstance, __argc, __argv);
 }
 
 #else
 
 int main(int argc, char** argv)
 {
-    return WinArcadeKit::Main(GetModuleHandle(NULL), argc, argv);
+    return wak::Main(GetModuleHandle(NULL), argc, argv);
 }
 
 #endif // WAK_DIST

@@ -4,7 +4,7 @@
 
 #include "AppWindow.h"
 
-namespace WinArcadeKit {
+namespace wak {
 
     Application::Application()
     {
@@ -19,5 +19,12 @@ namespace WinArcadeKit {
     void Application::Run(void* hInstance)
     {
         m_window = new AppWindow(static_cast<HINSTANCE>(hInstance));
+
+        MSG msg = {};
+        while (GetMessage(&msg, nullptr, 0, 0))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
     }
 }

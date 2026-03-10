@@ -2,7 +2,7 @@
 
 class AppWindow;
 
-namespace WinArcadeKit {
+namespace wak {
 
     class Application
     {
@@ -11,6 +11,10 @@ namespace WinArcadeKit {
         ~Application();
 
         void Run(void* hInstance);
+    
+    private:
+        Application(const Application&) = delete;
+        Application& operator=(const Application&) = delete;
     
     private:
         AppWindow *m_window;

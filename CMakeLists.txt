@@ -24,3 +24,5 @@ target_include_directories(WinArcadeKit
 target_link_libraries(WinArcadeKit PUBLIC DirectXTK d3d11.lib d3dcompiler.lib)
 
 add_subdirectory(examples/Sandbox)
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
