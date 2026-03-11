@@ -1,13 +1,23 @@
 #pragma once
 
+#include <string>
+#include <cstdint>
+
 class AppWindow;
 
 namespace wak {
 
+    struct AppSpec
+    {
+        std::string name = "WinArcadeKit App";
+        uint32_t width = 1280;
+        uint32_t height = 720;
+    };
+
     class Application
     {
     public:
-        Application();
+        Application(const AppSpec& applicationSpecification = AppSpec());
         ~Application();
 
         void Run(void* hInstance);
@@ -18,6 +28,7 @@ namespace wak {
     
     private:
         AppWindow *m_window;
+        AppSpec m_appSpec;
     };
 
     // NOTE: to be implemneted by client

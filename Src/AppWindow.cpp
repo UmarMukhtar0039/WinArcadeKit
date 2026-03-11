@@ -1,9 +1,18 @@
 #include "AppWindow.h"
 
-const char* AppWindow::s_className = TEXT("WinArcadeKit");
+const wchar_t* AppWindow::s_className = L"WinArcadeKit";
 
-AppWindow::AppWindow(HINSTANCE hInstance)
-    : m_hInstance(hInstance)
+static std::wstring Utf8ToWide(const std::string& str)
+{
+    if (str.empty()) return {};
+    int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.size()), nullptr, 0);
+    std::wstring result(size, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.size()), result.data(), size);
+    return result;
+}
+
+AppWindow::AppWindow(HINSTANCE hInstance, const std::string& title, uint32_t width, uint32_t height)
+	: m_hInstance(hInstance), m_title(Utf8ToWide(title)), m_width(width), m_height(height)
 {
     RegisterWindowClass();
     CreateAppWindow();
@@ -45,15 +54,15 @@ void AppWindow::CreateAppWindow()
     // TODO: this should be passed in via some AppSpec or something, not hardcoded here
     RECT clientSize;
     ZeroMemory(&clientSize, sizeof(clientSize));
-    clientSize.right = 1280;
-    clientSize.bottom = 720;
+    clientSize.right = m_width;
+    clientSize.bottom = m_height;
 
     AdjustWindowRectEx(&clientSize, windowStyle, FALSE, windowStyleEx);
 
     m_window = CreateWindowEx(
         windowStyleEx,
         s_className,
-        TEXT("WinArcadeKit App"), // This should be set by the app and passed in via AppSpec
+        m_title.c_str(),
         windowStyle | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         clientSize.right - clientSize.left, // total width

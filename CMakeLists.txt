@@ -14,13 +14,15 @@ add_subdirectory(extern/DirectXTK)
 
 # WinArcadeKit static library
 add_library(WinArcadeKit STATIC
-    src/Application.cpp
-    src/AppWindow.cpp
+src/Application.cpp
+src/AppWindow.cpp
 )
 target_include_directories(WinArcadeKit
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
+PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
+PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+target_compile_options(WinArcadeKit PUBLIC /utf-8)
+target_compile_definitions(WinArcadeKit PUBLIC UNICODE _UNICODE)
 target_link_libraries(WinArcadeKit PUBLIC DirectXTK d3d11.lib d3dcompiler.lib)
 
 add_subdirectory(examples/Sandbox)

@@ -6,7 +6,8 @@
 
 namespace wak {
 
-    Application::Application()
+    Application::Application(const AppSpec& appSpec)
+        : m_appSpec(appSpec)
     {
     }
 
@@ -18,7 +19,7 @@ namespace wak {
 
     void Application::Run(void* hInstance)
     {
-        m_window = new AppWindow(static_cast<HINSTANCE>(hInstance));
+        m_window = new AppWindow(static_cast<HINSTANCE>(hInstance), m_appSpec.name, m_appSpec.width, m_appSpec.height);
 
         MSG msg = {};
         while (GetMessage(&msg, nullptr, 0, 0))

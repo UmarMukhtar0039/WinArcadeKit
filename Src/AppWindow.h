@@ -2,11 +2,13 @@
 
 #include <Windows.h>
 #include <cstdint>
+#include <string>
+
 
 class AppWindow
 {
 public:
-    AppWindow(HINSTANCE hInstance);
+    AppWindow(HINSTANCE hInstance, const std::string& title, uint32_t width, uint32_t height);
     ~AppWindow();
 
 private:
@@ -25,5 +27,9 @@ private:
     HWND m_window = nullptr;
     HINSTANCE m_hInstance = nullptr;
 	
-    static const char* s_className;
+    static const wchar_t* s_className;
+
+	std::wstring m_title;
+	uint32_t m_width;
+	uint32_t m_height;
 };

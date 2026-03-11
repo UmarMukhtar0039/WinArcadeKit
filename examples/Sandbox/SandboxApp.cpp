@@ -2,5 +2,7 @@
 
 wak::Application* wak::CreateApplication(int argc, char** argv)
 {
-    return new Application();
+    wak::AppSpec spec;
+    spec.name = "🚀 テスト Sandbox 🎮";
+    return new Application(spec);
 }
