@@ -17,7 +17,7 @@ namespace wak {
     class Application
     {
     public:
-        Application(const AppSpec& applicationSpecification = AppSpec());
+        Application(const AppSpec& appSpec = AppSpec());
         ~Application();
 
         void Run(void* hInstance);
@@ -25,10 +25,14 @@ namespace wak {
     private:
         Application(const Application&) = delete;
         Application& operator=(const Application&) = delete;
+
+        void PumpMessages();
     
     private:
         AppWindow *m_window;
         AppSpec m_appSpec;
+
+        bool m_running = false;
     };
 
     // NOTE: to be implemneted by client
