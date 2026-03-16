@@ -26,6 +26,11 @@ namespace wak {
         while(m_running)
         {
             PumpMessages();
+
+            if (m_window->IsCloseRequested())
+            {
+                m_running = false;
+            }
         }
     }
 
@@ -36,15 +41,6 @@ namespace wak {
         // need to drain all the messages in the queue each frame otherwise the app experience input lags.
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
-            switch(msg.message)
-            {
-                case WM_QUIT:
-                    m_running = false;
-                    break;
-                
-                // Handle mouse and keyboard? Maybe not.
-            }
-
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }

@@ -12,6 +12,7 @@ namespace wak {
     {
         Application* app = CreateApplication(argc, argv);
         app->Run(hInstance);
+        delete app;
         return 0;
     }
 

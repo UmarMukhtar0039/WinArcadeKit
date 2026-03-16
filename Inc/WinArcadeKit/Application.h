@@ -29,7 +29,7 @@ namespace wak {
         void PumpMessages();
     
     private:
-        AppWindow *m_window;
+        AppWindow* m_window = nullptr;
         AppSpec m_appSpec;
 
         bool m_running = false;

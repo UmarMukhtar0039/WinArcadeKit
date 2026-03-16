@@ -11,6 +11,8 @@ public:
     AppWindow(HINSTANCE hInstance, const std::string& title, uint32_t width, uint32_t height);
     ~AppWindow();
 
+	bool IsCloseRequested() const { return AppWindow::s_closeWindow; }
+
 private:
     AppWindow(const AppWindow &) = delete;
     void operator=(const AppWindow &) = delete;
@@ -28,8 +30,10 @@ private:
     HINSTANCE m_hInstance = nullptr;
 	
     static const wchar_t* s_className;
+	static bool s_closeWindow;
 
 	std::wstring m_title;
 	uint32_t m_width;
 	uint32_t m_height;
+
 };

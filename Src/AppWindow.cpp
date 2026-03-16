@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 
 const wchar_t* AppWindow::s_className = L"WinArcadeKit";
+bool AppWindow::s_closeWindow = false;
 
 static std::wstring Utf8ToWide(const std::string& str)
 {
@@ -51,7 +52,6 @@ void AppWindow::CreateAppWindow()
     DWORD windowStyle = WS_OVERLAPPEDWINDOW;
     DWORD windowStyleEx = WS_EX_WINDOWEDGE | WS_EX_APPWINDOW;
 
-    // TODO: this should be passed in via some AppSpec or something, not hardcoded here
     RECT clientSize;
     ZeroMemory(&clientSize, sizeof(clientSize));
     clientSize.right = m_width;
@@ -72,14 +72,18 @@ void AppWindow::CreateAppWindow()
 
 void AppWindow::DestroyAppWindow()
 {
-    DestroyWindow(m_window);
+    if (m_window)
+    {
+        DestroyWindow(m_window);
+        m_window = nullptr;
+    }
 }
 
 LRESULT CALLBACK AppWindow::MessageCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if(uMsg == WM_CLOSE)
     {
-        PostQuitMessage(0);
+		s_closeWindow = true; // handle close request in the message callback instead.
         return 0;
     }
 
