@@ -77,7 +77,7 @@ void AppWindow::DestroyAppWindow()
 
 LRESULT CALLBACK AppWindow::MessageCallback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    if(uMsg == WM_DESTROY)
+    if(uMsg == WM_CLOSE)
     {
         PostQuitMessage(0);
         return 0;
