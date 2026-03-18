@@ -7,6 +7,8 @@ class AppWindow;
 
 namespace wak {
 
+    class Keyboard;
+
     struct AppSpec
     {
         std::string name = "WinArcadeKit App";
@@ -31,6 +33,9 @@ namespace wak {
     private:
         AppWindow* m_window = nullptr;
         AppSpec m_appSpec;
+
+        // Inputs
+		Keyboard* m_keyboard = nullptr;
 
         bool m_running = false;
     };

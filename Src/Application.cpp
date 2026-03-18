@@ -1,20 +1,28 @@
 #include "WinArcadeKit/Application.h"
+#include "WinArcadeKit/Keyboard.h"
+#include "AppWindow.h"
 
 #include <Windows.h>
 
-#include "AppWindow.h"
+#ifdef _DEBUG
+#include <iostream>
+#endif
 
 namespace wak {
 
     Application::Application(const AppSpec& appSpec)
         : m_appSpec(appSpec)
     {
+        m_keyboard = new Keyboard();
     }
 
     Application::~Application()
     {
         delete m_window;
         m_window = nullptr;
+
+		delete m_keyboard;
+		m_keyboard = nullptr;
     }
 
     void Application::Run(void* hInstance)
@@ -31,6 +39,17 @@ namespace wak {
             {
                 m_running = false;
             }
+
+			m_keyboard->Update();
+
+#ifdef _DEBUG
+            if (m_keyboard->IsKeyPressed(VK_SPACE))
+                std::cout << "SPACE pressed!" << std::endl;
+            if (m_keyboard->IsKeyPressed('W'))
+                std::cout << "W down" << std::endl;
+            if (m_keyboard->IsKeyReleased('W'))
+                std::cout << "W released" << std::endl;
+#endif
         }
     }
 

@@ -16,6 +16,7 @@ add_subdirectory(extern/DirectXTK)
 add_library(WinArcadeKit STATIC
 src/Application.cpp
 src/AppWindow.cpp
+src/Keyboard.cpp
 )
 target_include_directories(WinArcadeKit
 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc

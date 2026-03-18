@@ -35,5 +35,4 @@ private:
 	std::wstring m_title;
 	uint32_t m_width;
 	uint32_t m_height;
-
 };
