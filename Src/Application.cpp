@@ -40,6 +40,11 @@ namespace wak {
                 m_running = false;
             }
 
+            if (m_window->HasLostFocus())
+            {
+                m_keyboard->Reset();
+            }
+
 			m_keyboard->Update();
 
 #ifdef _DEBUG
@@ -60,7 +65,8 @@ namespace wak {
         // need to drain all the messages in the queue each frame otherwise the app experience input lags.
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
-            TranslateMessage(&msg);
+			// TODO: Not using WM_CHAR messages for now, but we might need to in the future for text input. If we do, we'll need to translate the message here.
+            //TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
     }

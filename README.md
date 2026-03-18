@@ -21,7 +21,7 @@ WinArcadeKit is a lightweight framework for building 2D arcade-style games on Wi
 - [ ] Primitive rendering (lines, triangles)
 - [ ] Sprite/texture rendering
 - [ ] Text rendering
-- [ ] Keyboard input handling
+- [x] Keyboard input handling
 - [ ] Collision detection
 - [ ] Asset management
 

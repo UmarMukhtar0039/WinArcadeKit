@@ -61,4 +61,9 @@ namespace wak
     {
         return m_keys[virtualKey];
     }
+
+    void Keyboard::Reset() noexcept
+    {
+        memset(m_keys, KEY_STATE_NONE, sizeof(m_keys));
+    }
 }

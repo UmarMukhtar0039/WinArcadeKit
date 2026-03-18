@@ -2,6 +2,7 @@
 
 const wchar_t* AppWindow::s_className = L"WinArcadeKit";
 bool AppWindow::s_closeWindow = false;
+bool AppWindow::s_lostFocus = false;
 
 static std::wstring Utf8ToWide(const std::string& str)
 {
@@ -70,6 +71,16 @@ void AppWindow::CreateAppWindow()
         nullptr, nullptr, m_hInstance, nullptr);
 }
 
+bool AppWindow::HasLostFocus()
+{
+    if (s_lostFocus)
+    {
+        s_lostFocus = false;
+        return true;
+    }
+    return false;
+}
+
 void AppWindow::DestroyAppWindow()
 {
     if (m_window)
@@ -85,6 +96,11 @@ LRESULT CALLBACK AppWindow::MessageCallback(HWND hwnd, UINT uMsg, WPARAM wParam,
     {
 		s_closeWindow = true; // handle close request in the message callback instead.
         return 0;
+    }
+
+    if(uMsg == WM_KILLFOCUS)
+    {
+        s_lostFocus = true;
     }
 
     return DefWindowProc(hwnd, uMsg, wParam, lParam);

@@ -11,7 +11,8 @@ public:
     AppWindow(HINSTANCE hInstance, const std::string& title, uint32_t width, uint32_t height);
     ~AppWindow();
 
-	bool IsCloseRequested() const { return AppWindow::s_closeWindow; }
+	bool IsCloseRequested() const { return s_closeWindow; }
+	bool HasLostFocus();
 
 private:
     AppWindow(const AppWindow &) = delete;
@@ -31,6 +32,7 @@ private:
 	
     static const wchar_t* s_className;
 	static bool s_closeWindow;
+	static bool s_lostFocus;
 
 	std::wstring m_title;
 	uint32_t m_width;
