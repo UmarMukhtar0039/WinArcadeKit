@@ -2,6 +2,9 @@
 
 #include <string>
 #include <cstdint>
+#include <map>
+
+#include "GameState.h"
 
 class AppWindow;
 
@@ -22,14 +25,25 @@ namespace wak {
         Application(const AppSpec& appSpec = AppSpec());
         ~Application();
 
-        void Run(void* hInstance);
-    
-    private:
         Application(const Application&) = delete;
         Application& operator=(const Application&) = delete;
 
+        void Run(void* hInstance);
+
+		Keyboard* GetKeyboard() const { return m_keyboard; }
+
+        // TODO: We might wanna move this to a separate StateManager class in the future if it gets more complex, but for now we'll just keep it here.
+        /* State Management*/
+        
+        void RegisterState(std::string_view name, GameState* state);
+        void SetNextState(std::string_view name, StateArgs args = {});
+        /******************/
+
+    private:
         void PumpMessages();
     
+        void SwapState();
+
     private:
         AppWindow* m_window = nullptr;
         AppSpec m_appSpec;
@@ -38,6 +52,13 @@ namespace wak {
 		Keyboard* m_keyboard = nullptr;
 
         bool m_running = false;
+
+		// State management
+        std::map<std::string, GameState*, std::less<>> m_gameStates;
+
+        GameState* m_currentState = nullptr;
+		GameState* m_nextState = nullptr;
+		StateArgs m_nextStateArgs;
     };
 
     // NOTE: to be implemneted by client

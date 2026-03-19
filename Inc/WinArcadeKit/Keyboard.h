@@ -15,6 +15,9 @@ namespace wak
             Keyboard();
             ~Keyboard();
 
+            Keyboard(const Keyboard&) = delete;
+            Keyboard& operator=(const Keyboard&) = delete;
+
             enum KeyState
             {
                 KEY_STATE_NONE = 0,
@@ -34,9 +37,6 @@ namespace wak
             
 
         private:
-            Keyboard(const Keyboard&) = delete;
-            Keyboard& operator=(const Keyboard&) = delete;
-
             // might not even use it ever.
             unsigned char GetKeyState(int virtualKey) const;
 

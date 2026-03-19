@@ -3,6 +3,7 @@
 #include "AppWindow.h"
 
 #include <Windows.h>
+#include <cassert>
 
 #ifdef _DEBUG
 #include <iostream>
@@ -18,6 +19,10 @@ namespace wak {
 
     Application::~Application()
     {
+        for (auto& [name, state] : m_gameStates)
+            delete state;
+        m_gameStates.clear();
+
         delete m_window;
         m_window = nullptr;
 
@@ -34,7 +39,9 @@ namespace wak {
         while(m_running)
         {
             PumpMessages();
+            SwapState();
 
+            // TODO: put all this in Update?
             if (m_window->IsCloseRequested())
             {
                 m_running = false;
@@ -46,15 +53,12 @@ namespace wak {
             }
 
 			m_keyboard->Update();
+            m_currentState->OnUpdate(*this, 0.0f); // TODO: Need timestep
+        }
 
-#ifdef _DEBUG
-            if (m_keyboard->IsKeyPressed(VK_SPACE))
-                std::cout << "SPACE pressed!" << std::endl;
-            if (m_keyboard->IsKeyPressed('W'))
-                std::cout << "W down" << std::endl;
-            if (m_keyboard->IsKeyReleased('W'))
-                std::cout << "W released" << std::endl;
-#endif
+        if (m_currentState)
+        {
+            m_currentState->OnDeactivate(*this);
         }
     }
 
@@ -70,5 +74,42 @@ namespace wak {
             DispatchMessage(&msg);
         }
     }
+
+	// TODO: We might wanna move this to a separate StateManager class in the future if it gets more complex, but for now we'll just keep it here.
+#pragma region StateManagement
+
+    void Application::SwapState()
+    {
+        if (m_nextState)
+        {
+            if (m_currentState)
+            {
+                m_currentState->OnDeactivate(*this);
+            }
+
+            m_currentState = m_nextState;
+            m_nextState = nullptr;
+            m_currentState->OnActivate(*this, m_nextStateArgs);
+            m_nextStateArgs.clear();
+        }
+    }
+
+    void Application::RegisterState(std::string_view name, GameState* state)
+    {
+        auto [it, isInserted] = m_gameStates.emplace(std::string(name), state);
+        assert(isInserted && "State with this name already registered!");
+    }
+    
+    void Application::SetNextState(std::string_view name, StateArgs args)
+    {
+		auto it = m_gameStates.find(name);
+		assert(it != m_gameStates.end() && "State not found! Was it registered?");
+		m_nextState = it->second;
+		m_nextStateArgs = std::move(args);
+	}
+
+#pragma endregion StateManagement
+
 }
+
 

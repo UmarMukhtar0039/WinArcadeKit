@@ -1,4 +1,6 @@
-add_executable(Sandbox SandboxApp.cpp)
+add_executable(Sandbox SandboxApp.cpp
+GameStates/MainMenu.cpp   
+)
 target_link_libraries(Sandbox PRIVATE WinArcadeKit)
 
 # Debug: console window for printf/cerr output

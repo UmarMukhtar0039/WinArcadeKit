@@ -11,13 +11,13 @@ public:
     AppWindow(HINSTANCE hInstance, const std::string& title, uint32_t width, uint32_t height);
     ~AppWindow();
 
+    AppWindow(const AppWindow &) = delete;
+    void operator=(const AppWindow &) = delete;
+
 	bool IsCloseRequested() const { return s_closeWindow; }
 	bool HasLostFocus();
 
 private:
-    AppWindow(const AppWindow &) = delete;
-    void operator=(const AppWindow &) = delete;
-
     void RegisterWindowClass();
     void UnregisterWindowClass();
     void CreateAppWindow();
