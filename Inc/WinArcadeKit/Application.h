@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include <map>
+#include <memory>
 
 #include "GameState.h"
 
@@ -10,6 +11,7 @@ class AppWindow;
 
 namespace wak {
 
+    class Graphics;
     class Keyboard;
 
     struct AppSpec
@@ -30,11 +32,12 @@ namespace wak {
 
         void Run(void* hInstance);
 
+        Graphics& GetGraphics() const { return *m_graphics; }
+
 		Keyboard* GetKeyboard() const { return m_keyboard; }
 
         // TODO: We might wanna move this to a separate StateManager class in the future if it gets more complex, but for now we'll just keep it here.
         /* State Management*/
-        
         void RegisterState(std::string_view name, GameState* state);
         void SetNextState(std::string_view name, StateArgs args = {});
         /******************/
@@ -48,6 +51,9 @@ namespace wak {
         AppWindow* m_window = nullptr;
         AppSpec m_appSpec;
 
+        // Graphics
+        std::unique_ptr<Graphics> m_graphics;
+
         // Inputs
 		Keyboard* m_keyboard = nullptr;
 
@@ -55,7 +61,6 @@ namespace wak {
 
 		// State management
         std::map<std::string, GameState*, std::less<>> m_gameStates;
-
         GameState* m_currentState = nullptr;
 		GameState* m_nextState = nullptr;
 		StateArgs m_nextStateArgs;

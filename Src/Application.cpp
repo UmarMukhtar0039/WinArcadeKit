@@ -1,5 +1,6 @@
 #include "WinArcadeKit/Application.h"
 #include "WinArcadeKit/Keyboard.h"
+#include "WinArcadeKit/Graphics.h"
 #include "AppWindow.h"
 
 #include <Windows.h>
@@ -33,6 +34,13 @@ namespace wak {
     void Application::Run(void* hInstance)
     {
         m_window = new AppWindow(static_cast<HINSTANCE>(hInstance), m_appSpec.name, m_appSpec.width, m_appSpec.height);
+        m_graphics = std::make_unique<Graphics>(m_window->GetHandle());
+
+        if (!m_nextState)
+        {
+            MessageBox(nullptr, L"No initial state set! Call SetNextState() before Run().", L"WinArcadeKit Error", MB_OK | MB_ICONERROR);
+            return;
+        }
 
         m_running = true;
 
@@ -54,6 +62,9 @@ namespace wak {
 
 			m_keyboard->Update();
             m_currentState->OnUpdate(*this, 0.0f); // TODO: Need timestep
+        
+            m_graphics->ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
+            m_graphics->EndFrame();
         }
 
         if (m_currentState)

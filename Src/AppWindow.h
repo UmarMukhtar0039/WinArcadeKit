@@ -14,6 +14,8 @@ public:
     AppWindow(const AppWindow &) = delete;
     void operator=(const AppWindow &) = delete;
 
+    HWND GetHandle() const { return m_window; }
+
 	bool IsCloseRequested() const { return s_closeWindow; }
 	bool HasLostFocus();
 
