@@ -23,7 +23,7 @@ namespace wak
         ID3D11Device* m_device = nullptr;
         ID3D11DeviceContext* m_deviceContext = nullptr;
         IDXGISwapChain* m_swapChain = nullptr;
-        ID3D11RenderTargetView* m_target = nullptr;
+        ID3D11RenderTargetView* m_renderTarget = nullptr;
     };
 
 }

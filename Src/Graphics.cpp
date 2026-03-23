@@ -38,7 +38,7 @@ namespace wak
 
         ID3D11Resource* backBuffer = nullptr;
         m_swapChain->GetBuffer(0, __uuidof(ID3D11Resource), (void**)&backBuffer);
-        m_device->CreateRenderTargetView(backBuffer, nullptr, &m_target);
+        m_device->CreateRenderTargetView(backBuffer, nullptr, &m_renderTarget);
         backBuffer->Release();
     }
     
@@ -47,7 +47,7 @@ namespace wak
         if (m_deviceContext) m_deviceContext->Release();
         if (m_device) m_device->Release();
         if (m_swapChain) m_swapChain->Release();
-        if (m_target) m_target->Release();
+        if (m_renderTarget) m_renderTarget->Release();
     }
 
 
@@ -63,6 +63,7 @@ namespace wak
     void Graphics::ClearBuffer(float r, float g, float b, float a)
     {
         const float clearColor[4] = { r, g, b, a };
-        m_deviceContext->ClearRenderTargetView(m_target, clearColor);
+        m_deviceContext->ClearRenderTargetView(m_renderTarget, clearColor);
+        m_deviceContext->OMSetRenderTargets(1, &m_renderTarget, NULL);
     }
 }
