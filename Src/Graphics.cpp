@@ -1,5 +1,7 @@
 #include "WinArcadeKit/Graphics.h"
 
+using Microsoft::WRL::ComPtr;
+
 namespace wak
 {
     Graphics::Graphics(HWND hwnd )
@@ -25,32 +27,22 @@ namespace wak
             NULL, // Default adapter
             D3D_DRIVER_TYPE_HARDWARE,
             NULL,
-            0,
+            D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG, // TODO: Should only in debug?
             NULL,
             0,
             D3D11_SDK_VERSION,
-            &swapChainDesc,
+            &swapChainDesc, // NOTE: this is essentially the same as swapChainDesc.ReleaseAndGetAddressOf() which does release first.
             &m_swapChain,
             &m_device,
             NULL,
             &m_deviceContext
         );
 
-        ID3D11Resource* backBuffer = nullptr;
-        m_swapChain->GetBuffer(0, __uuidof(ID3D11Resource), (void**)&backBuffer);
-        m_device->CreateRenderTargetView(backBuffer, nullptr, &m_renderTarget);
-        backBuffer->Release();
+        ComPtr<ID3D11Resource> backBuffer = nullptr;
+        m_swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
+        m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_renderTarget);
     }
     
-    Graphics::~Graphics()
-    {
-        if (m_deviceContext) m_deviceContext->Release();
-        if (m_device) m_device->Release();
-        if (m_swapChain) m_swapChain->Release();
-        if (m_renderTarget) m_renderTarget->Release();
-    }
-
-
     void Graphics::BeginFrame()
     {
     }
@@ -63,7 +55,7 @@ namespace wak
     void Graphics::ClearBuffer(float r, float g, float b, float a)
     {
         const float clearColor[4] = { r, g, b, a };
-        m_deviceContext->ClearRenderTargetView(m_renderTarget, clearColor);
-        m_deviceContext->OMSetRenderTargets(1, &m_renderTarget, NULL);
+        m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), clearColor);
+        m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), NULL);
     }
 }
