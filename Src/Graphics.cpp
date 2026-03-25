@@ -1,10 +1,16 @@
 #include "WinArcadeKit/Graphics.h"
 
+#include <memory>
+
 using Microsoft::WRL::ComPtr;
 
 namespace wak
 {
-    Graphics::Graphics(HWND hwnd )
+    Graphics::Graphics()
+    {
+    }
+
+    Graphics* Graphics::CreateDevice(HWND hwnd)
     {
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
         swapChainDesc.BufferDesc.Width = 0;
@@ -23,24 +29,63 @@ namespace wak
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
         swapChainDesc.Flags = 0;
 
-        D3D11CreateDeviceAndSwapChain(
+        UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+  #ifdef _DEBUG
+        flags |= D3D11_CREATE_DEVICE_DEBUG;
+  #endif
+
+        ComPtr<IDXGISwapChain> dxgiSwapChain;
+        ComPtr<ID3D11Device> d3dDevice;
+        ComPtr<ID3D11DeviceContext> d3dDeviceContext;
+
+        HRESULT hr = D3D11CreateDeviceAndSwapChain(
             NULL, // Default adapter
             D3D_DRIVER_TYPE_HARDWARE,
             NULL,
-            D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG, // TODO: Should only in debug?
+            flags,
             NULL,
             0,
             D3D11_SDK_VERSION,
-            &swapChainDesc, // NOTE: this is essentially the same as swapChainDesc.ReleaseAndGetAddressOf() which does release first.
-            &m_swapChain,
-            &m_device,
+            &swapChainDesc, 
+            &dxgiSwapChain, // NOTE: this is essentially the same as dxgiSwapChain.ReleaseAndGetAddressOf() which does release first.
+            &d3dDevice,
             NULL,
-            &m_deviceContext
+            &d3dDeviceContext
         );
 
+        if (FAILED(hr))
+        {
+            MessageBox(nullptr, L"Failed to create D3D11 device.", L"WinArcadeKit Error", MB_OK | MB_ICONERROR);
+            return nullptr;
+        }
+
         ComPtr<ID3D11Resource> backBuffer = nullptr;
-        m_swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
-        m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_renderTarget);
+        hr = dxgiSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer);
+        if (FAILED(hr))
+        {
+            MessageBox(nullptr, L"Failed to get swap chain buffer.", L"WinArcadeKit Error", MB_OK | MB_ICONERROR);
+            return nullptr;
+        }
+
+        ComPtr<ID3D11RenderTargetView> renderTarget = nullptr;
+        hr = d3dDevice->CreateRenderTargetView(backBuffer.Get(), nullptr, &renderTarget);
+        if (FAILED(hr))
+        {
+            MessageBox(nullptr, L"Failed to create render target view.", L"WinArcadeKit Error", MB_OK | MB_ICONERROR);
+            return nullptr;
+        }
+
+        Graphics* graphics = new Graphics();
+        graphics->m_device = std::move(d3dDevice);
+        graphics->m_deviceContext = std::move(d3dDeviceContext);
+        graphics->m_swapChain = std::move(dxgiSwapChain);
+        graphics->m_renderTarget = std::move(renderTarget);
+        return graphics;
+    }
+
+    void Graphics::DestroyDevice(Graphics* device)
+    {
+        delete device;
     }
     
     void Graphics::BeginFrame()

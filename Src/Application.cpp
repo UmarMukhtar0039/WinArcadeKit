@@ -29,12 +29,20 @@ namespace wak {
 
 		delete m_keyboard;
 		m_keyboard = nullptr;
+        
+        Graphics::DestroyDevice(m_graphics);
+        m_graphics = nullptr;
     }
 
     void Application::Run(void* hInstance)
     {
         m_window = new AppWindow(static_cast<HINSTANCE>(hInstance), m_appSpec.name, m_appSpec.width, m_appSpec.height);
-        m_graphics = std::make_unique<Graphics>(m_window->GetHandle());
+        m_graphics = wak::Graphics::CreateDevice(m_window->GetHandle());
+
+        if (!m_graphics)
+        {
+            return;
+        }
 
         if (!m_nextState)
         {
@@ -61,10 +69,10 @@ namespace wak {
             }
 
 			m_keyboard->Update();
-            m_currentState->OnUpdate(*this, 0.0f); // TODO: Need timestep
+            m_currentState->OnUpdate(*this, 0.16f); // TODO: Need timestep
         
-            m_graphics->ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
-            m_graphics->EndFrame();
+            //m_graphics->ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
+            //m_graphics->EndFrame();
         }
 
         if (m_currentState)

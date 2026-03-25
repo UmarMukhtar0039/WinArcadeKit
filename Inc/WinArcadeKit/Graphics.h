@@ -9,16 +9,20 @@ namespace wak
     class Graphics
     {
     public:
-        Graphics(HWND hwnd );
+    
+    Graphics(const Graphics&) = delete;
+    Graphics& operator=(const Graphics&) = delete;
+    
+    static Graphics* CreateDevice(HWND hwnd);
+    static void DestroyDevice(Graphics* device);
+    
+    void EndFrame();
+    void BeginFrame();
+    void ClearBuffer(float r, float g, float b, float a);
+
+    private:
+        Graphics();
         ~Graphics() = default; // NOTE: we are using ComPtr, so we don't need to manually release resources.
-
-        Graphics(const Graphics&) = delete;
-        Graphics& operator=(const Graphics&) = delete;
-
-        void EndFrame();
-        void BeginFrame();
-        void ClearBuffer(float r, float g, float b, float a);
-        
     private:
         Microsoft::WRL::ComPtr<ID3D11Device> m_device;
         Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;

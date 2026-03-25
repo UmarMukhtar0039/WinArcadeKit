@@ -3,7 +3,6 @@
 #include <string>
 #include <cstdint>
 #include <map>
-#include <memory>
 
 #include "GameState.h"
 
@@ -52,7 +51,7 @@ namespace wak {
         AppSpec m_appSpec;
 
         // Graphics
-        std::unique_ptr<Graphics> m_graphics;
+        Graphics* m_graphics = nullptr;
 
         // Inputs
 		Keyboard* m_keyboard = nullptr;
