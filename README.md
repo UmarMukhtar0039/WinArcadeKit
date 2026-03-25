@@ -4,7 +4,7 @@ A minimal 2D game framework for Windows, built from scratch on Direct3D 11.
 
 ## What is this?
 
-WinArcadeKit is a lightweight framework for building 2D arcade-style games on Windows. It handles the boilerplate — windowing, rendering, input, game loop, state management, asset loading — so you can focus on making games.
+WinArcadeKit is a lightweight framework for building 2D arcade-style games on Windows. It handles the boilerplate windowing, rendering, input, game loop, state management, asset loading so you can focus on making games.
 
 ## Tech Stack
 
