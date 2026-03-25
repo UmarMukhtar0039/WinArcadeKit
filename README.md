@@ -1,6 +1,6 @@
 # WinArcadeKit
 
-A minimal 2D game framework for Windows, built on Direct3D 11 and DirectXTK.
+A minimal 2D game framework for Windows, built from scratch on Direct3D 11.
 
 ## What is this?
 
@@ -8,22 +8,23 @@ WinArcadeKit is a lightweight framework for building 2D arcade-style games on Wi
 
 ## Tech Stack
 
-- **Graphics**: Direct3D 11
-- **Helpers**: DirectXTK
-- **Math**: DirectXMath
+- **Graphics**: Direct3D 11 (raw, no external libraries)
 - **Windowing**: Win32 API
 - **Shaders**: HLSL (Shader Model 5.0)
+- **COM Management**: WRL ComPtr
 
 ## Planned Features
 
-- [ ] Game loop with fixed window and viewport setup
-- [ ] Game state machine (menu, playing, game over, etc.)
-- [ ] Primitive rendering (lines, triangles)
-- [ ] Sprite/texture rendering
-- [ ] Text rendering
+- [x] Game loop with window setup
+- [x] Game state machine (menu, playing, game over, etc.)
 - [x] Keyboard input handling
+- [x] D3D11 graphics device (ComPtr, factory pattern, HRESULT checks)
+- [ ] Timestep (frame-independent updates)
+- [ ] Primitive rendering (lines, triangles via ImmediateMode)
+- [ ] Sprite/texture rendering
+- [ ] Text/font rendering
+- [ ] Audio (XAudio2)
 - [ ] Collision detection
-- [ ] Asset management
 
 ## Requirements
 
