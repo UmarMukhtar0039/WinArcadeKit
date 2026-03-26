@@ -6,7 +6,7 @@ namespace wak {
 	class Application;
 }
 
-class MainMenu : public wak::GameState
+class TestState : public wak::GameState
 {
 	virtual void OnUpdate(wak::Application& app, float dt) override;
 

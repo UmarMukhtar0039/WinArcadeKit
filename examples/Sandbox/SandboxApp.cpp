@@ -1,5 +1,5 @@
 #include <WinArcadeKit/EntryPoint.h>
-#include "GameStates/MainMenu.h"
+#include "GameStates/TestState.h"
 
 wak::Application* wak::CreateApplication(int argc, char** argv)
 {
@@ -9,7 +9,7 @@ wak::Application* wak::CreateApplication(int argc, char** argv)
 	spec.height = 720;
 
     auto* app = new Application(spec);
-	app->RegisterState("MainMenu", new MainMenu());
-	app->SetNextState("MainMenu");
+	app->RegisterState("TestState", new TestState());
+	app->SetNextState("TestState");
     return app;
 }

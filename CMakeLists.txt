@@ -4,28 +4,33 @@ project(WinArcadeKit LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# DirectXTK — disable features we don't need
-set(BUILD_TOOLS OFF CACHE BOOL "" FORCE)           # xwbtool
-set(BUILD_XAUDIO_WIN10 OFF CACHE BOOL "" FORCE)    # audio
-set(BUILD_XAUDIO_WIN8 OFF CACHE BOOL "" FORCE)     # audio
-set(BUILD_XAUDIO_REDIST OFF CACHE BOOL "" FORCE)   # audio
-set(BUILD_TESTING OFF CACHE BOOL "" FORCE)          # CTest targets (Continuous, Nightly, etc.)
-add_subdirectory(extern/DirectXTK)
-
 # WinArcadeKit static library
 add_library(WinArcadeKit STATIC
 src/Application.cpp
 src/AppWindow.cpp
 src/Keyboard.cpp
 src/Graphics.cpp
+src/Shaders/VertexShader.hlsl
+src/Shaders/PixelShader.hlsl
 )
+set_source_files_properties(src/Shaders/VertexShader.hlsl PROPERTIES
+    VS_SHADER_TYPE Vertex
+    VS_SHADER_MODEL 5.0
+    VS_SHADER_ENTRYPOINT main
+)
+set_source_files_properties(src/Shaders/PixelShader.hlsl PROPERTIES
+    VS_SHADER_TYPE Pixel
+    VS_SHADER_MODEL 5.0
+    VS_SHADER_ENTRYPOINT main
+)
+
 target_include_directories(WinArcadeKit
 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 target_compile_options(WinArcadeKit PUBLIC /utf-8)
 target_compile_definitions(WinArcadeKit PUBLIC UNICODE _UNICODE)
-target_link_libraries(WinArcadeKit PUBLIC DirectXTK d3d11.lib d3dcompiler.lib)
+target_link_libraries(WinArcadeKit PUBLIC d3d11.lib d3dcompiler.lib)
 
 # Sandbox
 add_subdirectory(examples/Sandbox)

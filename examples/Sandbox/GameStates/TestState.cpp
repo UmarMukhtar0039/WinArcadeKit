@@ -1,4 +1,4 @@
-#include "MainMenu.h"
+#include "TestState.h"
 #include "WinArcadeKit/Application.h"
 #include "WinArcadeKit/Keyboard.h"
 #include "WinArcadeKit/Graphics.h"
@@ -8,7 +8,7 @@
 #include <iostream>
 #endif
 
-void MainMenu::OnUpdate(wak::Application& app, float dt)
+void TestState::OnUpdate(wak::Application& app, float dt)
 {
 	wak::Keyboard* keyboard = app.GetKeyboard();
 	wak::Graphics& graphics = app.GetGraphics();
@@ -23,5 +23,6 @@ void MainMenu::OnUpdate(wak::Application& app, float dt)
 #endif
 
     graphics.ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
+	graphics.DrawTestTriangle();
     graphics.EndFrame();
 }
