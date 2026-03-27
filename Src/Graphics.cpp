@@ -98,44 +98,83 @@ namespace wak
     {
         const float clearColor[4] = { r, g, b, a };
         m_deviceContext->ClearRenderTargetView(m_renderTarget.Get(), clearColor);
-        //m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), NULL);
+        m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), NULL);
     }
 
     void Graphics::DrawTestTriangle()
     {
         struct Vertex
         {
-            float x, y;
+            struct {
+                float x, y;
+            }pos;
+
+            struct {
+			    unsigned char r, g, b, a;
+            }color;
 		};
 
         const Vertex vertices[] = {
-            { 0.0f, 0.5f },
-            { 0.5f, -0.5f },
-            { -0.5f, -0.5f }
+            { 0.0f, 0.5f, 255, 0, 0, 0 },
+            { 0.5f, -0.5f, 0, 255, 0, 0  },
+            { -0.5f, -0.5f, 0, 0, 255, 0  },
+            { -0.3f, 0.3f, 255, 0, 0, 0  },
+            { 0.3f, 0.3f, 0, 255, 0, 0  },
+            { 0.0f, -0.8f, 0, 0, 255, 0  },
 		};
 
-		D3D11_BUFFER_DESC bufferDesc = {};
-		bufferDesc.ByteWidth = sizeof(vertices);
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags = 0u;
-		bufferDesc.MiscFlags = 0u;
-		bufferDesc.StructureByteStride = sizeof(Vertex);
+		// vertex buffer
+		D3D11_BUFFER_DESC vBufferDesc = {};
+		vBufferDesc.ByteWidth = sizeof(vertices);
+		vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vBufferDesc.CPUAccessFlags = 0u;
+		vBufferDesc.MiscFlags = 0u;
+		vBufferDesc.StructureByteStride = sizeof(Vertex);
 		
         D3D11_SUBRESOURCE_DATA initData = {};
 		initData.pSysMem = vertices;
 
 		ComPtr<ID3D11Buffer> vertexBuffer;
         HRESULT buff = m_device->CreateBuffer(
-            &bufferDesc, // TODO: fill this with actual vertex data.
+            &vBufferDesc,
             &initData,
 			&vertexBuffer
 		);
 
-		const UINT stride = sizeof(Vertex);
-		const UINT offset = 0u;
+        const UINT stride = sizeof(Vertex);
+        const UINT offset = 0u;
         m_deviceContext->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
 
+		const unsigned short indices[] = { 
+            0, 1, 2, 
+            0, 2, 3,
+            0, 4, 1,
+			2, 1, 5,
+        };
+        
+		// index buffer
+        D3D11_BUFFER_DESC iBufferDesc = {};
+        iBufferDesc.ByteWidth = sizeof(indices);
+        iBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        iBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        iBufferDesc.CPUAccessFlags = 0u;
+        iBufferDesc.MiscFlags = 0u;
+        iBufferDesc.StructureByteStride = sizeof(unsigned short);
+
+        D3D11_SUBRESOURCE_DATA iInitData = {};
+        iInitData.pSysMem = indices;
+
+        ComPtr<ID3D11Buffer> indexBuffer;
+        HRESULT iBuff = m_device->CreateBuffer(
+            &iBufferDesc,
+            &iInitData,
+            &indexBuffer
+        );
+
+		m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+        // shaders setup
 		ComPtr<ID3DBlob> shaderBlob;
 
         // create pixel shader
@@ -166,7 +205,10 @@ namespace wak
         // input layout
         ComPtr<ID3D11InputLayout> inputLayout;
         const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
-        { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+        {
+            { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        };
 
         m_device->CreateInputLayout(
             inputElementDesc,
@@ -180,14 +222,14 @@ namespace wak
 		m_deviceContext->OMSetRenderTargets(1u, m_renderTarget.GetAddressOf(), NULL);
 
 		D3D11_VIEWPORT viewport = {};
-		viewport.Width = 1920.0f;
-		viewport.Height = 1080.0f;
+		viewport.Width = 1280.0f;
+		viewport.Height = 720.0f;
 		viewport.MaxDepth = 1.0f;
 
-		m_deviceContext->RSSetViewports(1u, &viewport);
+		m_deviceContext->RSSetViewports(1u, &viewport); // rasterizer stage viewport setup
 
-		m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_deviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        m_deviceContext->Draw( (UINT)std::size(vertices), 0);
+        m_deviceContext->DrawIndexed( (UINT)std::size(indices), 0u, 0u);
     }
 }

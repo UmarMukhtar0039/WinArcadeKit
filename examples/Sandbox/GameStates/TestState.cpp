@@ -22,7 +22,7 @@ void TestState::OnUpdate(wak::Application& app, float dt)
         std::cout << "W released" << std::endl;
 #endif
 
-    graphics.ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
+    graphics.ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
 	graphics.DrawTestTriangle();
     graphics.EndFrame();
 }

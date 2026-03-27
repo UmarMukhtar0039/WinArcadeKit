@@ -13,6 +13,9 @@ src/Graphics.cpp
 src/Shaders/VertexShader.hlsl
 src/Shaders/PixelShader.hlsl
 )
+
+# TODO: Shaders are currently compiled to .cso files and loaded from disk at runtime.
+# Will be replaced by embedding as byte arrays (fxc /Fh) so they're baked into the .lib.
 set_source_files_properties(src/Shaders/VertexShader.hlsl PROPERTIES
     VS_SHADER_TYPE Vertex
     VS_SHADER_MODEL 5.0
