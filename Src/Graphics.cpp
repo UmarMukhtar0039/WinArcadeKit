@@ -1,9 +1,11 @@
 #include "WinArcadeKit/Graphics.h"
 
-#include <d3dcompiler.h>
-#include <memory>
 #include <cmath>
+#include <iterator>
 #include <DirectXMath.h>
+
+#include "VertexShader.h"
+#include "PixelShader.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -217,32 +219,14 @@ namespace wak
         m_deviceContext->VSSetConstantBuffers(0u, 1u, constantBuffer.GetAddressOf());
         /***********Constant Buffer************/
 
-        // shaders setup
-		ComPtr<ID3DBlob> shaderBlob;
-
         // create pixel shader
 		ComPtr<ID3D11PixelShader> pixelShader;
-		D3DReadFileToBlob(L"PixelShader.cso", &shaderBlob);
-        m_device->CreatePixelShader(
-            shaderBlob->GetBufferPointer(),
-            shaderBlob->GetBufferSize(),
-            nullptr,
-            &pixelShader);
-
-		// bind pixel shader to pipeline
+        m_device->CreatePixelShader(g_PixelShaderBytecode, sizeof(g_PixelShaderBytecode), nullptr, &pixelShader);
 		m_deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0u);
 
-        // crate vshader
+        // create vertex shader
 		ComPtr<ID3D11VertexShader> vertexShader;
-        D3DReadFileToBlob(L"VertexShader.cso", &shaderBlob);
-        m_device->CreateVertexShader(
-            shaderBlob->GetBufferPointer(),
-            shaderBlob->GetBufferSize(),
-            nullptr,
-            &vertexShader
-		);
-
-		// bind vertex shader to pipeline
+        m_device->CreateVertexShader(g_VertexShaderBytecode, sizeof(g_VertexShaderBytecode), nullptr, &vertexShader);
 		m_deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0u);
 
         // input layout
@@ -256,8 +240,8 @@ namespace wak
         m_device->CreateInputLayout(
             inputElementDesc,
             (UINT)std::size(inputElementDesc),
-            shaderBlob->GetBufferPointer(),
-            shaderBlob->GetBufferSize(),
+            g_VertexShaderBytecode,
+            sizeof(g_VertexShaderBytecode),
             &inputLayout);
 
 		m_deviceContext->IASetInputLayout(inputLayout.Get());
