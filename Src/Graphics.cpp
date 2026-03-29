@@ -3,7 +3,9 @@
 #include <d3dcompiler.h>
 #include <memory>
 #include <cmath>
+#include <DirectXMath.h>
 
+using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 namespace wak
@@ -102,7 +104,7 @@ namespace wak
         m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), NULL);
     }
 
-    void Graphics::DrawTestTriangle(float angle)
+    void Graphics::DrawTestTriangle(float x, float y, float angle)
     {
         struct Vertex
         {
@@ -124,7 +126,7 @@ namespace wak
             { 0.0f, -1.f, 0, 0, 255, 0  },
 		};
 
-		// vertex buffer
+        /***********Vertex Buffer************/
 		D3D11_BUFFER_DESC vBufferDesc = {};
 		vBufferDesc.ByteWidth = sizeof(vertices);
 		vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -146,6 +148,7 @@ namespace wak
         const UINT stride = sizeof(Vertex);
         const UINT offset = 0u;
         m_deviceContext->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
+        /***********Vertex Buffer************/
 
 		const unsigned short indices[] = { 
             0, 1, 2, 
@@ -154,7 +157,7 @@ namespace wak
 			2, 1, 5, // back face culling. Winding order is counter-clockwise.
         };
         
-		// index buffer
+        /***********Index Buffer************/
         D3D11_BUFFER_DESC iBufferDesc = {};
         iBufferDesc.ByteWidth = sizeof(indices);
         iBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -174,29 +177,25 @@ namespace wak
         );
 
 		m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
-
         /***********Index Buffer************/
 
 		// constant buffer
         struct ConstantBuffer
         {
-            struct {
-                float element[4][4];
-            }transformation;
+            XMMATRIX transformation;
 		};
-
 
         const ConstantBuffer constantBufferData = {
             {
-                {
-                    { std::cos(angle),      std::sin(angle),     0.0f, 0.0f},
-                    { -std::sin(angle),     std::cos(angle),     0.0f, 0.0f},
-                    { 0.0f,                 0.0f,                1.0f, 0.0f },
-                    { 0.0f,                 0.0f,                0.0f, 1.0f }
-                }
+                XMMatrixTranspose(
+                    XMMatrixRotationZ(angle)*
+                    XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f)*
+                    XMMatrixTranslation(x, y, 0.0f)
+                )
             }
 		};
 
+        /***********Constant Buffer************/
         D3D11_BUFFER_DESC cBufferDesc = {};
         cBufferDesc.ByteWidth = sizeof(constantBufferData);
         cBufferDesc.Usage = D3D11_USAGE_DYNAMIC;

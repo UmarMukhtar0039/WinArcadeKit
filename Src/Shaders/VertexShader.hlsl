@@ -6,7 +6,7 @@ struct VS_OUT
 
 cbuffer TransformBuffer
 {
-    matrix transform; // 4x4 transformation matrix (float4x4)
+   matrix transform; // 4x4 transformation matrix (float4x4)
 };
 
 VS_OUT main(float2 pos : Position, float3 color : Color)

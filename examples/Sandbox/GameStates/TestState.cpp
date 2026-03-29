@@ -22,8 +22,26 @@ void TestState::OnUpdate(wak::Application& app, float dt)
         std::cout << "W released" << std::endl;
 #endif
 
+
+    if (keyboard->IsKeyDown('W'))
+    {
+		y += 0.01f;
+    }
+    if (keyboard->IsKeyDown('S'))
+	{
+        y -= 0.01f;
+	}
+	if (keyboard->IsKeyDown('A'))
+    {
+	    x -= 0.01f;
+	}
+    if (keyboard->IsKeyDown('D'))
+    {
+        x += 0.01f;
+    }
+
     graphics.ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
-	graphics.DrawTestTriangle(m_angle);
+	graphics.DrawTestTriangle(x, y, m_angle);
 	m_angle += 0.016f; // TODO: use dt instead of hardcoding the angle increment.
     graphics.EndFrame();
 }
