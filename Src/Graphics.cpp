@@ -2,6 +2,7 @@
 
 #include <d3dcompiler.h>
 #include <memory>
+#include <cmath>
 
 using Microsoft::WRL::ComPtr;
 
@@ -101,7 +102,7 @@ namespace wak
         m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), NULL);
     }
 
-    void Graphics::DrawTestTriangle()
+    void Graphics::DrawTestTriangle(float angle)
     {
         struct Vertex
         {
@@ -120,7 +121,7 @@ namespace wak
             { -0.5f, -0.5f, 0, 0, 255, 0  },
             { -0.3f, 0.3f, 255, 0, 0, 0  },
             { 0.3f, 0.3f, 0, 255, 0, 0  },
-            { 0.0f, -0.8f, 0, 0, 255, 0  },
+            { 0.0f, -1.f, 0, 0, 255, 0  },
 		};
 
 		// vertex buffer
@@ -150,7 +151,7 @@ namespace wak
             0, 1, 2, 
             0, 2, 3,
             0, 4, 1,
-			2, 1, 5,
+			2, 1, 5, // back face culling. Winding order is counter-clockwise.
         };
         
 		// index buffer
@@ -173,6 +174,49 @@ namespace wak
         );
 
 		m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+        /***********Index Buffer************/
+
+		// constant buffer
+        struct ConstantBuffer
+        {
+            struct {
+                float element[4][4];
+            }transformation;
+		};
+
+
+        const ConstantBuffer constantBufferData = {
+            {
+                {
+                    { std::cos(angle),      std::sin(angle),     0.0f, 0.0f},
+                    { -std::sin(angle),     std::cos(angle),     0.0f, 0.0f},
+                    { 0.0f,                 0.0f,                1.0f, 0.0f },
+                    { 0.0f,                 0.0f,                0.0f, 1.0f }
+                }
+            }
+		};
+
+        D3D11_BUFFER_DESC cBufferDesc = {};
+        cBufferDesc.ByteWidth = sizeof(constantBufferData);
+        cBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        cBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        cBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        cBufferDesc.MiscFlags = 0u;
+        cBufferDesc.StructureByteStride = 0u;
+
+        D3D11_SUBRESOURCE_DATA cInitData = {};
+        cInitData.pSysMem = &constantBufferData;
+
+        ComPtr<ID3D11Buffer> constantBuffer;
+        HRESULT cBuff = m_device->CreateBuffer(
+            &cBufferDesc,
+            &cInitData,
+            &constantBuffer
+        );
+
+        m_deviceContext->VSSetConstantBuffers(0u, 1u, constantBuffer.GetAddressOf());
+        /***********Constant Buffer************/
 
         // shaders setup
 		ComPtr<ID3DBlob> shaderBlob;

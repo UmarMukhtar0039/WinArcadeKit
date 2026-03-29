@@ -19,7 +19,7 @@ namespace wak
         void BeginFrame();
         void ClearBuffer(float r, float g, float b, float a);
 
-	    void DrawTestTriangle(); // TODO: remove this after testing.
+	    void DrawTestTriangle(float angle); // TODO: remove this after testing.
 
     private:
         Graphics() = default;

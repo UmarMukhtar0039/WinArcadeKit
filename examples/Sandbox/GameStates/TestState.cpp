@@ -23,6 +23,7 @@ void TestState::OnUpdate(wak::Application& app, float dt)
 #endif
 
     graphics.ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
-	graphics.DrawTestTriangle();
+	graphics.DrawTestTriangle(m_angle);
+	m_angle += 0.016f; // TODO: use dt instead of hardcoding the angle increment.
     graphics.EndFrame();
 }
