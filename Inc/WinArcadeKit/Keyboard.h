@@ -1,8 +1,8 @@
 /*
 * We are using polling of the Windows internal key state cache for simplicity and to avoid the overhead of processing Win32 messages for keyboard input. 
 * There are a few problems with polling. We can't simulate the window lost focus scenario well without having some sort of band-aid code in place to do som.
-* We'll need to handle WM_CHAR messages in future for texts.
-* We'll resort to implementing event based system with a member windowProc Or using DirectXTK keyboard where they have event based inputs. 
+* TODO: We'll need to handle WM_CHAR messages in future for texts.
+* TODO: We'll resort to implementing event based system with a member windowProc Or using DirectXTK keyboard where they have event based inputs. 
 */
 
 #pragma once

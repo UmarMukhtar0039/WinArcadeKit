@@ -77,6 +77,21 @@ namespace wak
             return nullptr;
         }
 
+        // enable alpha blending
+        D3D11_BLEND_DESC blendDesc = {};
+        blendDesc.RenderTarget[0].BlendEnable = TRUE;
+        blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+        blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        ComPtr<ID3D11BlendState> blendState;
+        d3dDevice->CreateBlendState(&blendDesc, &blendState);
+        d3dDeviceContext->OMSetBlendState(blendState.Get(), nullptr, 0xFFFFFFFF);
+
         Graphics* graphics = new Graphics();
         graphics->m_device = std::move(d3dDevice);
         graphics->m_deviceContext = std::move(d3dDeviceContext);
@@ -156,7 +171,7 @@ namespace wak
             0, 1, 2, 
             0, 2, 3,
             0, 4, 1,
-			2, 1, 5, // back face culling. Winding order is counter-clockwise.
+			1, 2, 5, // back face culling. Winding order is counter-clockwise.
         };
         
         /***********Index Buffer************/
@@ -191,7 +206,7 @@ namespace wak
             {
                 XMMatrixTranspose(
                     XMMatrixRotationZ(angle)*
-                    XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f)*
+                    XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f)* // TODO: aspect ratio will be adjusted for when we use orthographic projection.
                     XMMatrixTranslation(x, y, 0.0f)
                 )
             }
@@ -255,7 +270,7 @@ namespace wak
 
 		m_deviceContext->RSSetViewports(1u, &viewport); // rasterizer stage viewport setup
 
-		m_deviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         m_deviceContext->DrawIndexed( (UINT)std::size(indices), 0u, 0u);
     }

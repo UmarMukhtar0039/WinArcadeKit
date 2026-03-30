@@ -1,5 +1,7 @@
-add_executable(Sandbox SandboxApp.cpp
-GameStates/TestState.cpp   
+add_executable(Sandbox
+SandboxApp.cpp
+GameStates/TestState.h
+GameStates/TestState.cpp
 )
 target_link_libraries(Sandbox PRIVATE WinArcadeKit)
 

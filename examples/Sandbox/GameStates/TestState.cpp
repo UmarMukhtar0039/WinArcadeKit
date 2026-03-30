@@ -40,7 +40,7 @@ void TestState::OnUpdate(wak::Application& app, float dt)
         x += 0.01f;
     }
 
-    graphics.ClearBuffer(0.0f, 0.0f, 0.0f, 1.0f);
+	graphics.ClearBuffer(0.39f, 0.58f, 0.93f, 1.0f); // Cornflower blue
 	graphics.DrawTestTriangle(x, y, m_angle);
 	m_angle += 0.016f; // TODO: use dt instead of hardcoding the angle increment.
     graphics.EndFrame();

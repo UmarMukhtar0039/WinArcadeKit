@@ -31,11 +31,21 @@ add_custom_command(
 add_library(WinArcadeKit STATIC
 src/Application.cpp
 src/AppWindow.cpp
+src/AppWindow.h
 src/Keyboard.cpp
 src/Graphics.cpp
+inc/WinArcadeKit/Application.h
+inc/WinArcadeKit/EntryPoint.h
+inc/WinArcadeKit/GameState.h
+inc/WinArcadeKit/Graphics.h
+inc/WinArcadeKit/Keyboard.h
+src/Shaders/VertexShader.hlsl
+src/Shaders/PixelShader.hlsl
 ${SHADER_OUTPUT_DIR}/VertexShader.h
 ${SHADER_OUTPUT_DIR}/PixelShader.h
 )
+# Don't let VS compile .hlsl files with its built-in HLSL compiler
+set_source_files_properties(src/Shaders/VertexShader.hlsl src/Shaders/PixelShader.hlsl PROPERTIES VS_TOOL_OVERRIDE "None")
 
 target_include_directories(WinArcadeKit
 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
