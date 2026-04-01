@@ -12,7 +12,7 @@ namespace wak
         Graphics(const Graphics&) = delete;
         Graphics& operator=(const Graphics&) = delete;
     
-        static Graphics* CreateDevice(HWND hwnd);
+        static Graphics* CreateDevice(HWND hwnd, FLOAT width, FLOAT height);
         static void DestroyDevice(Graphics* device);
     
         void EndFrame();

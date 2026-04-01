@@ -37,7 +37,7 @@ namespace wak {
     void Application::Run(void* hInstance)
     {
         m_window = new AppWindow(static_cast<HINSTANCE>(hInstance), m_appSpec.name, m_appSpec.width, m_appSpec.height);
-        m_graphics = wak::Graphics::CreateDevice(m_window->GetHandle());
+        m_graphics = wak::Graphics::CreateDevice(m_window->GetHandle(), m_appSpec.width, m_appSpec.height);
 
         if (!m_graphics)
         {
@@ -67,10 +67,9 @@ namespace wak {
             {
                 m_keyboard->Reset();
             }
-
-			m_keyboard->Update();
-            m_currentState->OnUpdate(*this, 0.16f); // TODO: Need timestep
         
+			Update(0.016f); // TODO: use actual delta time instead of hardcoding it.
+            Render();
             //m_graphics->ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
             //m_graphics->EndFrame();
         }
@@ -78,6 +77,20 @@ namespace wak {
         if (m_currentState)
         {
             m_currentState->OnDeactivate(*this);
+        }
+    }
+
+    void Application::Update(float dt)
+    {
+        m_keyboard->Update();
+        m_currentState->OnUpdate(*this, 0.16f); // TODO: Need timestep
+    }
+
+    void Application::Render()
+    {
+        if (m_currentState)
+        {
+            m_currentState->OnRender(*this);
         }
     }
 

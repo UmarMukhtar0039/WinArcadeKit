@@ -30,6 +30,8 @@ namespace wak {
         Application& operator=(const Application&) = delete;
 
         void Run(void* hInstance);
+        void Update(float dt);
+        void Render();
 
         Graphics& GetGraphics() const { return *m_graphics; }
 

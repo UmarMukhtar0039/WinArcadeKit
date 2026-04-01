@@ -34,11 +34,13 @@ src/AppWindow.cpp
 src/AppWindow.h
 src/Keyboard.cpp
 src/Graphics.cpp
+src/ImmediateMode.h
 inc/WinArcadeKit/Application.h
 inc/WinArcadeKit/EntryPoint.h
 inc/WinArcadeKit/GameState.h
 inc/WinArcadeKit/Graphics.h
 inc/WinArcadeKit/Keyboard.h
+inc/WinArcadeKit/Vertex.h
 src/Shaders/VertexShader.hlsl
 src/Shaders/PixelShader.hlsl
 ${SHADER_OUTPUT_DIR}/VertexShader.h

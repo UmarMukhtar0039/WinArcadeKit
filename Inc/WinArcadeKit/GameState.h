@@ -17,6 +17,7 @@ namespace wak {
 
         virtual void OnActivate(Application& app, StateArgs& args) {}
         virtual void OnUpdate(Application& app, float dt) {}
+        virtual void OnRender(Application& app) {}
         virtual void OnDeactivate(Application& app) {}
     };
 }

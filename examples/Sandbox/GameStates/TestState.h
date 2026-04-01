@@ -9,6 +9,7 @@ namespace wak {
 class TestState : public wak::GameState
 {
 	virtual void OnUpdate(wak::Application& app, float dt) override;
+	virtual void OnRender(wak::Application& app) override;
 
 private:
 	float m_angle = 0.016f;
