@@ -88,10 +88,14 @@ namespace wak {
 
     void Application::Render()
     {
+        m_graphics->BeginFrame();
+
         if (m_currentState)
         {
             m_currentState->OnRender(*this);
         }
+
+        m_graphics->EndFrame();
     }
 
     void Application::PumpMessages()

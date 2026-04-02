@@ -35,6 +35,7 @@ src/AppWindow.h
 src/Keyboard.cpp
 src/Graphics.cpp
 src/ImmediateMode.h
+src/ImmediateMode.cpp
 inc/WinArcadeKit/Application.h
 inc/WinArcadeKit/EntryPoint.h
 inc/WinArcadeKit/GameState.h

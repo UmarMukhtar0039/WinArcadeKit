@@ -5,14 +5,18 @@
 #include "WinArcadeKit/Vertex.h"
 
 #include <Windows.h>
+#include <DirectXMath.h>
+#include <iterator>
+
 #ifdef _DEBUG
 #include <iostream>
 #endif
 
+using namespace DirectX;
+
 void TestState::OnUpdate(wak::Application& app, float dt)
 {
 	wak::Keyboard* keyboard = app.GetKeyboard();
-	wak::Graphics& graphics = app.GetGraphics();
 
 #ifdef _DEBUG
     if (keyboard->IsKeyPressed(VK_SPACE))
@@ -41,30 +45,37 @@ void TestState::OnUpdate(wak::Application& app, float dt)
         x += 0.01f;
     }
 
-	graphics.ClearBuffer(0.39f, 0.58f, 0.93f, 1.0f); // Cornflower blue
-	graphics.DrawTestTriangle(x, y, m_angle);
 	m_angle += 0.016f; // TODO: use dt instead of hardcoding the angle increment.
-    graphics.EndFrame();
 }
 
 void TestState::OnRender(wak::Application& app)
 {
+	wak::Graphics& gfx = app.GetGraphics();
+
     const wak::Vertex vertices[] = {
-        { 0.0f, 0.5f, 255, 0, 0, 0 },
-        { 0.5f, -0.5f, 0, 255, 0, 0  },
-        { -0.5f, -0.5f, 0, 0, 255, 0  },
-        { -0.3f, 0.3f, 255, 0, 0, 0  },
-        { 0.3f, 0.3f, 0, 255, 0, 0  },
-        { 0.0f, -1.f, 0, 0, 255, 0  },
+        // triangle 0
+        { 0.0f,  0.5f,  255, 0,   0,   255 },
+        { 0.5f, -0.5f,  0,   255, 0,   255 },
+        {-0.5f, -0.5f,  0,   0,   255, 255 },
+        // triangle 1
+        { 0.0f,  0.5f,  255, 0,   0,   255 },
+        {-0.5f, -0.5f,  0,   0,   255, 255 },
+        {-0.3f,  0.3f,  255, 0,   0,   255 },
+        // triangle 2
+        { 0.0f,  0.5f,  255, 0,   0,   255 },
+        { 0.3f,  0.3f,  0,   255, 0,   255 },
+        { 0.5f, -0.5f,  0,   255, 0,   255 },
+        // triangle 3
+        { 0.5f, -0.5f,  0,   255, 0,   255 },
+        {-0.5f, -0.5f,  0,   0,   255, 255 },
+        { 0.0f, -1.0f,  0,   0,   255, 255 },
     };
 
-    //const ConstantBuffer constantBufferData = {
-    //    {
-    //        XMMatrixTranspose(
-    //            XMMatrixRotationZ(angle) *
-    //            XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f) * // TODO: aspect ratio will be adjusted for when we use orthographic projection.
-    //            XMMatrixTranslation(x, y, 0.0f)
-    //        )
-    //    }
-    //};
+    XMMATRIX transform =
+        XMMatrixRotationZ(m_angle) *
+        XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f) * // TODO: aspect ratio will be adjusted for when we use orthographic projection.
+        XMMatrixTranslation(x, y, 0.0f);
+
+	gfx.SetModelMatrix(transform);
+    gfx.Draw(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertices, std::size(vertices));
 }

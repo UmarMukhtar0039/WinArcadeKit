@@ -4,9 +4,8 @@
 #include <iterator>
 #include <DirectXMath.h>
 
-#include "VertexShader.h"
-#include "PixelShader.h"
 #include "WinArcadeKit/Vertex.h"
+#include "ImmediateMode.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -93,21 +92,42 @@ namespace wak
         d3dDevice->CreateBlendState(&blendDesc, &blendState);
         d3dDeviceContext->OMSetBlendState(blendState.Get(), nullptr, 0xFFFFFFFF);
 
+		ImmediateMode* immediateMode = ImmediateMode::Create(d3dDevice.Get(), d3dDeviceContext.Get());
+        if (!immediateMode)
+        {
+            MessageBox(nullptr, L"Failed to create ImmediateMode renderer.", L"WinArcadeKit Error", MB_OK | MB_ICONERROR);
+            return nullptr;
+        }
+
         Graphics* graphics = new Graphics();
         graphics->m_device = std::move(d3dDevice);
         graphics->m_deviceContext = std::move(d3dDeviceContext);
         graphics->m_swapChain = std::move(dxgiSwapChain);
         graphics->m_renderTarget = std::move(renderTarget);
-        return graphics;
+		graphics->m_immediateMode = immediateMode;
+		graphics->m_width = width;
+		graphics->m_height = height;
+		return graphics; // TODO: wrap this in a unique_ptr once we decide on the ownership model for Graphics.
     }
 
-    void Graphics::DestroyDevice(Graphics* device)
+    void Graphics::DestroyDevice(Graphics* gfx)
     {
-        delete device;
+		ImmediateMode::Destroy(gfx->m_immediateMode);
+		gfx->m_immediateMode = nullptr;
+        
+        delete gfx;
     }
     
     void Graphics::BeginFrame()
     {
+        ClearBuffer(0.39f, 0.58f, 0.93f, 1.0f); // Cornflower blue
+
+        D3D11_VIEWPORT viewport = {};
+        viewport.Width = m_width;
+        viewport.Height = m_height;
+        viewport.MaxDepth = 1.0f;
+
+        m_deviceContext->RSSetViewports(1u, &viewport); // rasterizer stage viewport setup
     }
 
     void Graphics::EndFrame()
@@ -122,299 +142,13 @@ namespace wak
         m_deviceContext->OMSetRenderTargets(1, m_renderTarget.GetAddressOf(), NULL);
     }
 
-  //  void Graphics::DrawTestTriangle(float x, float y, float angle)
-  //  {
-  //      // TODO: Goes into app
-  //      const Vertex vertices[] = {
-  //          { 0.0f, 0.5f, 255, 0, 0, 0 },
-  //          { 0.5f, -0.5f, 0, 255, 0, 0  },
-  //          { -0.5f, -0.5f, 0, 0, 255, 0  },
-  //          { -0.3f, 0.3f, 255, 0, 0, 0  },
-  //          { 0.3f, 0.3f, 0, 255, 0, 0  },
-  //          { 0.0f, -1.f, 0, 0, 255, 0  },
-		//};
-
-  //      // Goes into ImmediateMode
-  //      /***********Vertex Buffer************/
-		//D3D11_BUFFER_DESC vBufferDesc = {};
-		//vBufferDesc.ByteWidth = sizeof(vertices);
-		//vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		//vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		//vBufferDesc.CPUAccessFlags = 0u;
-		//vBufferDesc.MiscFlags = 0u;
-		//vBufferDesc.StructureByteStride = sizeof(Vertex);
-		//
-  //      D3D11_SUBRESOURCE_DATA initData = {};
-		//initData.pSysMem = vertices;
-
-		//ComPtr<ID3D11Buffer> vertexBuffer;
-  //      HRESULT buff = m_device->CreateBuffer(
-  //          &vBufferDesc,
-  //          &initData,
-		//	&vertexBuffer
-		//);
-
-  //      const UINT stride = sizeof(Vertex);
-  //      const UINT offset = 0u;
-  //      m_deviceContext->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
-  //      /***********Vertex Buffer************/
-
-  //      // Goes to app
-		//const unsigned short indices[] = { 
-  //          0, 1, 2, 
-  //          0, 2, 3,
-  //          0, 4, 1,
-		//	1, 2, 5, // back face culling. Winding order is counter-clockwise.
-  //      };
-  //      
-  //      // Goes into ImmediateMode
-  //      /***********Index Buffer************/
-  //      D3D11_BUFFER_DESC iBufferDesc = {};
-  //      iBufferDesc.ByteWidth = sizeof(indices);
-  //      iBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-  //      iBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  //      iBufferDesc.CPUAccessFlags = 0u;
-  //      iBufferDesc.MiscFlags = 0u;
-  //      iBufferDesc.StructureByteStride = sizeof(unsigned short);
-
-  //      D3D11_SUBRESOURCE_DATA iInitData = {};
-  //      iInitData.pSysMem = indices;
-
-  //      ComPtr<ID3D11Buffer> indexBuffer;
-  //      HRESULT iBuff = m_device->CreateBuffer(
-  //          &iBufferDesc,
-  //          &iInitData,
-  //          &indexBuffer
-  //      );
-
-		//m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
-  //      /***********Index Buffer************/
-
-		//// constant buffer
-  //      struct ConstantBuffer
-  //      {
-  //          XMMATRIX transformation;
-		//};
-
-  //      // Goes to app
-  //      const ConstantBuffer constantBufferData = {
-  //          {
-  //              XMMatrixTranspose(
-  //                  XMMatrixRotationZ(angle)*
-  //                  XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f)* // TODO: aspect ratio will be adjusted for when we use orthographic projection.
-  //                  XMMatrixTranslation(x, y, 0.0f)
-  //              )
-  //          }
-		//};
-
-		//// Goes to ImmediateMode
-  //      /***********Constant Buffer************/
-  //      D3D11_BUFFER_DESC cBufferDesc = {};
-  //      cBufferDesc.ByteWidth = sizeof(constantBufferData);
-  //      cBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-  //      cBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  //      cBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  //      cBufferDesc.MiscFlags = 0u;
-  //      cBufferDesc.StructureByteStride = 0u;
-
-  //      D3D11_SUBRESOURCE_DATA cInitData = {};
-  //      cInitData.pSysMem = &constantBufferData;
-
-  //      ComPtr<ID3D11Buffer> constantBuffer;
-  //      HRESULT cBuff = m_device->CreateBuffer(
-  //          &cBufferDesc,
-  //          &cInitData,
-  //          &constantBuffer
-  //      );
-
-  //      m_deviceContext->VSSetConstantBuffers(0u, 1u, constantBuffer.GetAddressOf());
-  //      /***********Constant Buffer************/
-
-		//// Goes to ImmediateMode
-  //      // create pixel shader
-		//ComPtr<ID3D11PixelShader> pixelShader;
-  //      m_device->CreatePixelShader(g_PixelShaderBytecode, sizeof(g_PixelShaderBytecode), nullptr, &pixelShader);
-		//m_deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0u);
-
-  //      // create vertex shader
-		//ComPtr<ID3D11VertexShader> vertexShader;
-  //      m_device->CreateVertexShader(g_VertexShaderBytecode, sizeof(g_VertexShaderBytecode), nullptr, &vertexShader);
-		//m_deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0u);
-
-  //      // input layout
-  //      ComPtr<ID3D11InputLayout> inputLayout;
-  //      const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
-  //      {
-  //          { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  //          { "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-  //      };
-
-  //      m_device->CreateInputLayout(
-  //          inputElementDesc,
-  //          (UINT)std::size(inputElementDesc),
-  //          g_VertexShaderBytecode,
-  //          sizeof(g_VertexShaderBytecode),
-  //          &inputLayout);
-
-		//m_deviceContext->IASetInputLayout(inputLayout.Get());
-
-		//m_deviceContext->OMSetRenderTargets(1u, m_renderTarget.GetAddressOf(), NULL);
-
-  //      // Stays in Graphics?
-		//D3D11_VIEWPORT viewport = {};
-		//viewport.Width = 1280.0f;
-		//viewport.Height = 720.0f;
-		//viewport.MaxDepth = 1.0f;
-  //      
-		//m_deviceContext->RSSetViewports(1u, &viewport); // rasterizer stage viewport setup
-
-		//// Goes to ImmediateMode
-		//m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		//// Goes to ImmediateMode
-  //      m_deviceContext->DrawIndexed( (UINT)std::size(indices), 0u, 0u);
-  //  }
-
-void Graphics::DrawTestTriangle(float x, float y, float angle)
-{
-    // Goes into ImmediateMode
-    /***********Vertex Buffer************/
-    D3D11_BUFFER_DESC vBufferDesc = {};
-    vBufferDesc.ByteWidth = sizeof(vertices);
-    vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vBufferDesc.CPUAccessFlags = 0u;
-    vBufferDesc.MiscFlags = 0u;
-    vBufferDesc.StructureByteStride = sizeof(Vertex);
-
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = vertices;
-
-    ComPtr<ID3D11Buffer> vertexBuffer;
-    HRESULT buff = m_device->CreateBuffer(
-        &vBufferDesc,
-        &initData,
-        &vertexBuffer
-    );
-
-    const UINT stride = sizeof(Vertex);
-    const UINT offset = 0u;
-    m_deviceContext->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
-    /***********Vertex Buffer************/
-
-    // Goes to app
-    const unsigned short indices[] = {
-        0, 1, 2,
-        0, 2, 3,
-        0, 4, 1,
-        1, 2, 5, // back face culling. Winding order is counter-clockwise.
-    };
-
-    // Goes into ImmediateMode
-    /***********Index Buffer************/
-    D3D11_BUFFER_DESC iBufferDesc = {};
-    iBufferDesc.ByteWidth = sizeof(indices);
-    iBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    iBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    iBufferDesc.CPUAccessFlags = 0u;
-    iBufferDesc.MiscFlags = 0u;
-    iBufferDesc.StructureByteStride = sizeof(unsigned short);
-
-    D3D11_SUBRESOURCE_DATA iInitData = {};
-    iInitData.pSysMem = indices;
-
-    ComPtr<ID3D11Buffer> indexBuffer;
-    HRESULT iBuff = m_device->CreateBuffer(
-        &iBufferDesc,
-        &iInitData,
-        &indexBuffer
-    );
-
-    m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
-    /***********Index Buffer************/
-
-    // constant buffer
-    struct ConstantBuffer
+    void Graphics::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, const Vertex* vertices, unsigned int count)
     {
-        XMMATRIX transformation;
-    };
+		m_immediateMode->Draw(topology, vertices, count);
+    }
 
-    // Goes to app
-    const ConstantBuffer constantBufferData = {
-        {
-            XMMatrixTranspose(
-                XMMatrixRotationZ(angle) *
-                XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f) * // TODO: aspect ratio will be adjusted for when we use orthographic projection.
-                XMMatrixTranslation(x, y, 0.0f)
-            )
-        }
-    };
-
-    // Goes to ImmediateMode
-    /***********Constant Buffer************/
-    D3D11_BUFFER_DESC cBufferDesc = {};
-    cBufferDesc.ByteWidth = sizeof(constantBufferData);
-    cBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    cBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    cBufferDesc.MiscFlags = 0u;
-    cBufferDesc.StructureByteStride = 0u;
-
-    D3D11_SUBRESOURCE_DATA cInitData = {};
-    cInitData.pSysMem = &constantBufferData;
-
-    ComPtr<ID3D11Buffer> constantBuffer;
-    HRESULT cBuff = m_device->CreateBuffer(
-        &cBufferDesc,
-        &cInitData,
-        &constantBuffer
-    );
-
-    m_deviceContext->VSSetConstantBuffers(0u, 1u, constantBuffer.GetAddressOf());
-    /***********Constant Buffer************/
-
-    // Goes to ImmediateMode
-    // create pixel shader
-    ComPtr<ID3D11PixelShader> pixelShader;
-    m_device->CreatePixelShader(g_PixelShaderBytecode, sizeof(g_PixelShaderBytecode), nullptr, &pixelShader);
-    m_deviceContext->PSSetShader(pixelShader.Get(), nullptr, 0u);
-
-    // create vertex shader
-    ComPtr<ID3D11VertexShader> vertexShader;
-    m_device->CreateVertexShader(g_VertexShaderBytecode, sizeof(g_VertexShaderBytecode), nullptr, &vertexShader);
-    m_deviceContext->VSSetShader(vertexShader.Get(), nullptr, 0u);
-
-    // input layout
-    ComPtr<ID3D11InputLayout> inputLayout;
-    const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+    void Graphics::SetModelMatrix(XMMATRIX transform)
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-    };
-
-    m_device->CreateInputLayout(
-        inputElementDesc,
-        (UINT)std::size(inputElementDesc),
-        g_VertexShaderBytecode,
-        sizeof(g_VertexShaderBytecode),
-        &inputLayout);
-
-    m_deviceContext->IASetInputLayout(inputLayout.Get());
-
-    m_deviceContext->OMSetRenderTargets(1u, m_renderTarget.GetAddressOf(), NULL);
-
-    // Stays in Graphics?
-    D3D11_VIEWPORT viewport = {};
-    viewport.Width = 1280.0f;
-    viewport.Height = 720.0f;
-    viewport.MaxDepth = 1.0f;
-
-    m_deviceContext->RSSetViewports(1u, &viewport); // rasterizer stage viewport setup
-
-    // Goes to ImmediateMode
-    m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    // Goes to ImmediateMode
-    m_deviceContext->DrawIndexed((UINT)std::size(indices), 0u, 0u);
-}
+        m_immediateMode->SetModelMatrix(transform);
+    }
 }
