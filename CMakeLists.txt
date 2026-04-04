@@ -42,6 +42,7 @@ inc/WinArcadeKit/GameState.h
 inc/WinArcadeKit/Graphics.h
 inc/WinArcadeKit/Keyboard.h
 inc/WinArcadeKit/Vertex.h
+inc/WinArcadeKit/Time.h
 src/Shaders/VertexShader.hlsl
 src/Shaders/PixelShader.hlsl
 ${SHADER_OUTPUT_DIR}/VertexShader.h

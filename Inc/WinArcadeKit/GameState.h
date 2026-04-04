@@ -7,6 +7,7 @@
 namespace wak {
 
     class Application;
+    struct Time;
 
     using StateArgs = std::map<std::string, std::any>;
 
@@ -16,7 +17,7 @@ namespace wak {
         virtual ~GameState() = default;
 
         virtual void OnActivate(Application& app, StateArgs& args) {}
-        virtual void OnUpdate(Application& app, float dt) {}
+        virtual void OnUpdate(Application& app, const Time& time) {}
         virtual void OnRender(Application& app) {}
         virtual void OnDeactivate(Application& app) {}
     };

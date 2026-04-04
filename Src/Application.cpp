@@ -52,26 +52,19 @@ namespace wak {
 
         m_running = true;
 
+        // Initialize QPC timing
+        LARGE_INTEGER freq, now;
+        QueryPerformanceFrequency(&freq);
+        QueryPerformanceCounter(&now);
+        m_qpcFrequency = freq.QuadPart;
+        m_qpcPrevious = now.QuadPart;
+
         while(m_running)
         {
             PumpMessages();
             SwapState();
-
-            // TODO: put all this in Update?
-            if (m_window->IsCloseRequested())
-            {
-                m_running = false;
-            }
-
-            if (m_window->HasLostFocus())
-            {
-                m_keyboard->Reset();
-            }
-        
-			Update(0.016f); // TODO: use actual delta time instead of hardcoding it.
+			Update();
             Render();
-            //m_graphics->ClearBuffer(1.0f, 1.0f, 0.0f, 1.0f);
-            //m_graphics->EndFrame();
         }
 
         if (m_currentState)
@@ -80,10 +73,52 @@ namespace wak {
         }
     }
 
-    void Application::Update(float dt)
+    void Application::Update()
     {
+        if (m_window->IsCloseRequested())
+        {
+            m_running = false;
+        }
+
+        // TODO: doesn't do shit honestly check Keyboard.h comment at the top
+        if (m_window->HasLostFocus())
+        {
+            m_keyboard->Reset();
+        }
+
+        // Compute delta time via QPC
+        LARGE_INTEGER now;
+        QueryPerformanceCounter(&now);
+        float rawDt = static_cast<float>(
+            static_cast<double>(now.QuadPart - m_qpcPrevious) /
+            static_cast<double>(m_qpcFrequency)
+        );
+
+        m_qpcPrevious = now.QuadPart;
+
+        // Clamp to prevent spiral of death
+        // TODO: we might wanna discard the frame if dt is too large bcz right now the objects would teleport when we drag the game window and then stop dragging.
+        if (rawDt > MAX_DELTA_TIME)
+            rawDt = MAX_DELTA_TIME;
+
+        // Update Time struct
+        m_time.unscaledDeltaTime = rawDt;
+        m_time.deltaTime = rawDt * m_time.timeScale;
+        m_time.timeElapsed += static_cast<double>(rawDt);
+        m_time.frameCount++;
+
         m_keyboard->Update();
-        m_currentState->OnUpdate(*this, 0.16f); // TODO: Need timestep
+        m_currentState->OnUpdate(*this, m_time); // TODO: We migt pass in deltaTime only and rest should be accessed via app.GetTime() as this might be consfusing for others.
+    }
+
+    const Time& Application::GetTime() const
+    {
+        return m_time;
+    }
+
+    void Application::SetTimeScale(float scale)
+    {
+        m_time.timeScale = scale;
     }
 
     void Application::Render()

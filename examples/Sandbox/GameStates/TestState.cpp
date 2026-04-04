@@ -3,6 +3,7 @@
 #include "WinArcadeKit/Keyboard.h"
 #include "WinArcadeKit/Graphics.h"
 #include "WinArcadeKit/Vertex.h"
+#include "WinArcadeKit/Time.h"
 
 #include <Windows.h>
 #include <DirectXMath.h>
@@ -14,7 +15,7 @@
 
 using namespace DirectX;
 
-void TestState::OnUpdate(wak::Application& app, float dt)
+void TestState::OnUpdate(wak::Application& app, const wak::Time& time)
 {
 	wak::Keyboard* keyboard = app.GetKeyboard();
 
@@ -27,25 +28,18 @@ void TestState::OnUpdate(wak::Application& app, float dt)
         std::cout << "W released" << std::endl;
 #endif
 
-
+    const float MOVE_SPEED = 0.6f;     // units per second
     if (keyboard->IsKeyDown('W'))
-    {
-		y += 0.01f;
-    }
+        y += MOVE_SPEED * time.deltaTime;
     if (keyboard->IsKeyDown('S'))
-	{
-        y -= 0.01f;
-	}
-	if (keyboard->IsKeyDown('A'))
-    {
-	    x -= 0.01f;
-	}
+        y -= MOVE_SPEED * time.deltaTime;
+    if (keyboard->IsKeyDown('A'))
+        x -= MOVE_SPEED * time.deltaTime;
     if (keyboard->IsKeyDown('D'))
-    {
-        x += 0.01f;
-    }
+        x += MOVE_SPEED * time.deltaTime;
 
-	m_angle += 0.016f; // TODO: use dt instead of hardcoding the angle increment.
+    const float ROTATION_SPEED = 1.0f; // rads per second
+	m_angle += ROTATION_SPEED * time.deltaTime;
 }
 
 void TestState::OnRender(wak::Application& app)

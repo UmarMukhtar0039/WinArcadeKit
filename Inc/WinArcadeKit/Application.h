@@ -5,6 +5,7 @@
 #include <map>
 
 #include "GameState.h"
+#include "Time.h"
 
 class AppWindow;
 
@@ -30,12 +31,14 @@ namespace wak {
         Application& operator=(const Application&) = delete;
 
         void Run(void* hInstance);
-        void Update(float dt);
+        void Update();
         void Render();
 
         Graphics& GetGraphics() const { return *m_graphics; }
-
 		Keyboard* GetKeyboard() const { return m_keyboard; }
+
+        const Time& GetTime() const;
+        void SetTimeScale(float scale);
 
         // TODO: We might wanna move this to a separate StateManager class in the future if it gets more complex, but for now we'll just keep it here.
         /* State Management*/
@@ -59,6 +62,13 @@ namespace wak {
 		Keyboard* m_keyboard = nullptr;
 
         bool m_running = false;
+
+        // Timing
+        // TODO: Although not needed right now but we'll have configurable SetMaxFPS() with hybrid sleep+spin for software caps
+        Time m_time;
+        int64_t m_qpcFrequency = 0;
+        int64_t m_qpcPrevious = 0;
+        static constexpr float MAX_DELTA_TIME = 0.25f;
 
 		// State management
         std::map<std::string, GameState*, std::less<>> m_gameStates;
