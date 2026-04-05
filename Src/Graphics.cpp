@@ -92,6 +92,14 @@ namespace wak
         d3dDevice->CreateBlendState(&blendDesc, &blendState);
         d3dDeviceContext->OMSetBlendState(blendState.Get(), nullptr, 0xFFFFFFFF);
 
+        // Disable backface culling nobody uses culling in 2D games.
+        D3D11_RASTERIZER_DESC rasterDesc = {};
+        rasterDesc.FillMode = D3D11_FILL_SOLID;
+        rasterDesc.CullMode = D3D11_CULL_NONE;
+        ComPtr<ID3D11RasterizerState> rasterState;
+        d3dDevice->CreateRasterizerState(&rasterDesc, &rasterState);
+        d3dDeviceContext->RSSetState(rasterState.Get());
+
 		ImmediateMode* immediateMode = ImmediateMode::Create(d3dDevice.Get(), d3dDeviceContext.Get(), width, height);
         if (!immediateMode)
         {
