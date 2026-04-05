@@ -97,7 +97,7 @@ namespace wak {
         m_qpcPrevious = now.QuadPart;
 
         // Clamp to prevent spiral of death
-        // TODO: we might wanna discard the frame if dt is too large bcz right now the objects would teleport when we drag the game window and then stop dragging.
+        // TODO: we might wanna discard the frame if dt is too large bcz right now the objects would teleport when we drag the game window and then stop dragging. i.e just set rawDT to 0
         if (rawDt > MAX_DELTA_TIME)
             rawDt = MAX_DELTA_TIME;
 

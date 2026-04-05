@@ -12,7 +12,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace wak
 {
-    ImmediateMode* ImmediateMode::Create(ID3D11Device* d3dDevice, ID3D11DeviceContext* d3dDeviceContext)
+    ImmediateMode* ImmediateMode::Create(ID3D11Device* d3dDevice, ID3D11DeviceContext* d3dDeviceContext, float width, float height)
     {
         /***********Dynamic Vertex Buffer************/
         D3D11_BUFFER_DESC vBufferDesc = {};
@@ -87,6 +87,8 @@ namespace wak
         im->m_vertexBuffer = std::move(vertexBuffer);
         im->m_constantBuffer = std::move(constantBuffer);
         XMStoreFloat4x4(&im->m_modelMatrix, XMMatrixIdentity());
+        XMStoreFloat4x4(&im->m_viewMatrix, XMMatrixIdentity());
+        XMStoreFloat4x4(&im->m_projectionMatrix, XMMatrixOrthographicOffCenterLH(0.0f, width, height, 0.0f, 0.0f, 1.0f));
         return im;
     }
 
@@ -98,6 +100,16 @@ namespace wak
     void ImmediateMode::SetModelMatrix(XMMATRIX modelMatrix)
     {
         XMStoreFloat4x4(&m_modelMatrix, modelMatrix);
+    }
+
+    void ImmediateMode::SetViewMatrix(XMMATRIX viewMatrix)
+    {
+        XMStoreFloat4x4(&m_viewMatrix, viewMatrix);
+    }
+
+    void ImmediateMode::SetProjectionMatrix(XMMATRIX projectionMatrix)
+    {
+        XMStoreFloat4x4(&m_projectionMatrix, projectionMatrix);
     }
 
     void ImmediateMode::Draw(D3D11_PRIMITIVE_TOPOLOGY topology, const Vertex* vertices, unsigned int vertexCount)
@@ -113,11 +125,12 @@ namespace wak
         memcpy(mapped.pData, vertices, vertexCount * sizeof(Vertex));
         m_deviceContext->Unmap(m_vertexBuffer.Get(), 0);
     
-        // 2. update constant buffer with transposed model matrix
+        // 2. update constant buffer with transposed MVP matrix
         hr = m_deviceContext->Map(m_constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
         if (FAILED(hr)) return;
 
-        XMMATRIX transposed = XMMatrixTranspose(XMLoadFloat4x4(&m_modelMatrix));
+        XMMATRIX mvp = XMLoadFloat4x4(&m_modelMatrix) * XMLoadFloat4x4(&m_viewMatrix) * XMLoadFloat4x4(&m_projectionMatrix);
+        XMMATRIX transposed = XMMatrixTranspose(mvp);
         memcpy(mapped.pData, &transposed, sizeof(XMMATRIX));
         m_deviceContext->Unmap(m_constantBuffer.Get(), 0);
 

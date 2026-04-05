@@ -92,7 +92,7 @@ namespace wak
         d3dDevice->CreateBlendState(&blendDesc, &blendState);
         d3dDeviceContext->OMSetBlendState(blendState.Get(), nullptr, 0xFFFFFFFF);
 
-		ImmediateMode* immediateMode = ImmediateMode::Create(d3dDevice.Get(), d3dDeviceContext.Get());
+		ImmediateMode* immediateMode = ImmediateMode::Create(d3dDevice.Get(), d3dDeviceContext.Get(), width, height);
         if (!immediateMode)
         {
             MessageBox(nullptr, L"Failed to create ImmediateMode renderer.", L"WinArcadeKit Error", MB_OK | MB_ICONERROR);
@@ -150,5 +150,15 @@ namespace wak
     void Graphics::SetModelMatrix(XMMATRIX transform)
     {
         m_immediateMode->SetModelMatrix(transform);
+    }
+
+    void Graphics::SetViewMatrix(XMMATRIX viewMatrix)
+    {
+        m_immediateMode->SetViewMatrix(viewMatrix);
+    }
+
+    void Graphics::SetProjectionMatrix(XMMATRIX projectionMatrix)
+    {
+        m_immediateMode->SetProjectionMatrix(projectionMatrix);
     }
 }

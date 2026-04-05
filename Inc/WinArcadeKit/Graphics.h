@@ -26,6 +26,8 @@ namespace wak
         // Drawing api
         void Draw(D3D11_PRIMITIVE_TOPOLOGY topology, const Vertex* vertices, unsigned int count);
         void SetModelMatrix(DirectX::XMMATRIX transform);
+        void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
+        void SetProjectionMatrix(DirectX::XMMATRIX projectionMatrix);
 	    
     private:
         Graphics() = default;

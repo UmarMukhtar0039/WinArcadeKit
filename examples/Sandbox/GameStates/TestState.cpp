@@ -28,11 +28,11 @@ void TestState::OnUpdate(wak::Application& app, const wak::Time& time)
         std::cout << "W released" << std::endl;
 #endif
 
-    const float MOVE_SPEED = 0.6f;     // units per second
+    const float MOVE_SPEED = 200.0f;   // world units per second
     if (keyboard->IsKeyDown('W'))
-        y += MOVE_SPEED * time.deltaTime;
+        y -= MOVE_SPEED * time.deltaTime;  // Y-down: up on screen = decrease Y
     if (keyboard->IsKeyDown('S'))
-        y -= MOVE_SPEED * time.deltaTime;
+        y += MOVE_SPEED * time.deltaTime;
     if (keyboard->IsKeyDown('A'))
         x -= MOVE_SPEED * time.deltaTime;
     if (keyboard->IsKeyDown('D'))
@@ -48,26 +48,25 @@ void TestState::OnRender(wak::Application& app)
 
     const wak::Vertex vertices[] = {
         // triangle 0
-        { 0.0f,  0.5f,  255, 0,   0,   255 },
-        { 0.5f, -0.5f,  0,   255, 0,   255 },
-        {-0.5f, -0.5f,  0,   0,   255, 255 },
+        {  0.0f,   25.0f,  255, 0,   0,   255 },
+        {  25.0f, -25.0f,  0,   255, 0,   255 },
+        { -25.0f, -25.0f,  0,   0,   255, 255 },
         // triangle 1
-        { 0.0f,  0.5f,  255, 0,   0,   255 },
-        {-0.5f, -0.5f,  0,   0,   255, 255 },
-        {-0.3f,  0.3f,  255, 0,   0,   255 },
+        {  0.0f,   25.0f,  255, 0,   0,   255 },
+        { -25.0f, -25.0f,  0,   0,   255, 255 },
+        { -15.0f,  15.0f,  255, 0,   0,   255 },
         // triangle 2
-        { 0.0f,  0.5f,  255, 0,   0,   255 },
-        { 0.3f,  0.3f,  0,   255, 0,   255 },
-        { 0.5f, -0.5f,  0,   255, 0,   255 },
+        {  0.0f,   25.0f,  255, 0,   0,   255 },
+        {  15.0f,  15.0f,  0,   255, 0,   255 },
+        {  25.0f, -25.0f,  0,   255, 0,   255 },
         // triangle 3
-        { 0.5f, -0.5f,  0,   255, 0,   255 },
-        {-0.5f, -0.5f,  0,   0,   255, 255 },
-        { 0.0f, -1.0f,  0,   0,   255, 255 },
+        {  25.0f, -25.0f,  0,   255, 0,   255 },
+        { -25.0f, -25.0f,  0,   0,   255, 255 },
+        {  0.0f,  -50.0f,  0,   0,   255, 255 },
     };
 
     XMMATRIX transform =
         XMMatrixRotationZ(m_angle) *
-        XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f) * // TODO: aspect ratio will be adjusted for when we use orthographic projection.
         XMMatrixTranslation(x, y, 0.0f);
 
 	gfx.SetModelMatrix(transform);

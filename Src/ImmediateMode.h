@@ -15,10 +15,12 @@ namespace wak
          ImmediateMode& operator=(const ImmediateMode&) = delete;
 
 
-         static ImmediateMode* Create(ID3D11Device* d3dDevice, ID3D11DeviceContext* d3dDeviceContext);
+         static ImmediateMode* Create(ID3D11Device* d3dDevice, ID3D11DeviceContext* d3dDeviceContext, float width, float height);
 		 static void Destroy(ImmediateMode* mode);
 
          void SetModelMatrix(DirectX::XMMATRIX modelMatrix);
+         void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
+         void SetProjectionMatrix(DirectX::XMMATRIX projectionMatrix);
 		 void Draw(D3D11_PRIMITIVE_TOPOLOGY topology, const Vertex* vertices, unsigned int vertexCount);
 
     private:
@@ -38,5 +40,7 @@ namespace wak
         Microsoft::WRL::ComPtr<ID3D11Buffer>        m_constantBuffer;
         
         DirectX::XMFLOAT4X4 m_modelMatrix;
+        DirectX::XMFLOAT4X4 m_viewMatrix;
+        DirectX::XMFLOAT4X4 m_projectionMatrix;
     };
 }

@@ -14,6 +14,6 @@ class TestState : public wak::GameState
 
 private:
 	float m_angle = 0.0f;
-	float x = 0.f;
-	float y = 0.f;
+	float x = 640.0f;
+	float y = 360.0f;
 };
