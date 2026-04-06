@@ -108,12 +108,27 @@ namespace wak {
         m_time.frameCount++;
 
         m_keyboard->Update();
-        m_currentState->OnUpdate(*this, m_time); // TODO: We migt pass in deltaTime only and rest should be accessed via app.GetTime() as this might be consfusing for others.
+        m_currentState->OnUpdate(*this, m_time.deltaTime);
     }
 
-    const Time& Application::GetTime() const
+    float Application::GetUnscaledDeltaTime() const
     {
-        return m_time;
+        return m_time.unscaledDeltaTime;
+    }
+
+    double Application::GetTimeElapsed() const
+    {
+        return m_time.timeElapsed;
+    }
+
+    uint64_t Application::GetFrameCount() const
+    {
+        return m_time.frameCount;
+    }
+
+    float Application::GetTimeScale() const
+    {
+        return m_time.timeScale;
     }
 
     void Application::SetTimeScale(float scale)

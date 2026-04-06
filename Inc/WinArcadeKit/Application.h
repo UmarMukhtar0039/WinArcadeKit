@@ -37,7 +37,11 @@ namespace wak {
         Graphics& GetGraphics() const { return *m_graphics; }
 		Keyboard* GetKeyboard() const { return m_keyboard; }
 
-        const Time& GetTime() const;
+        // Timing accessors
+        float GetUnscaledDeltaTime() const;
+        double GetTimeElapsed() const;
+        uint64_t GetFrameCount() const;
+        float GetTimeScale() const;
         void SetTimeScale(float scale);
 
         // TODO: We might wanna move this to a separate StateManager class in the future if it gets more complex, but for now we'll just keep it here.

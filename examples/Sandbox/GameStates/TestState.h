@@ -4,12 +4,11 @@
 
 namespace wak {
 	class Application;
-	struct Time;
 }
 
 class TestState : public wak::GameState
 {
-	virtual void OnUpdate(wak::Application& app, const wak::Time& time) override;
+	virtual void OnUpdate(wak::Application& app, float deltaTime) override;
 	virtual void OnRender(wak::Application& app) override;
 
 private:
