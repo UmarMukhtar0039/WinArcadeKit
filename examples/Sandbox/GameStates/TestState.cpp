@@ -3,6 +3,7 @@
 #include "WinArcadeKit/Keyboard.h"
 #include "WinArcadeKit/Graphics.h"
 #include "WinArcadeKit/Vertex.h"
+#include "WinArcadeKit/Texture.h"
 
 #include <Windows.h>
 #include <DirectXMath.h>
@@ -13,6 +14,23 @@
 #endif
 
 using namespace DirectX;
+
+void TestState::OnActivate(wak::Application& app, wak::StateArgs& args)
+{
+    m_testTexture = app.GetGraphics().LoadTexture(L"D:\\PersonalProjects\\GamesFromScratch\\WinArcadeKit\\build\\examples\\Sandbox\\Debug\\test.png"); // TODO: Need to fixup the working directory?
+#ifdef _DEBUG
+    if (m_testTexture)
+        std::cout << "Texture loaded: " << m_testTexture->GetWidth() << "x" << m_testTexture->GetHeight() << std::endl;
+    else
+        std::cout << "Failed to load texture!" << std::endl;
+#endif
+}
+
+void TestState::OnDeactivate(wak::Application& app)
+{
+    wak::Texture::Destroy(m_testTexture); // TODO: I think I should make the api a little better, this smells. Put Destroy in Graphics?
+    m_testTexture = nullptr;
+}
 
 void TestState::OnUpdate(wak::Application& app, float deltaTime)
 {
@@ -39,6 +57,17 @@ void TestState::OnUpdate(wak::Application& app, float deltaTime)
 
     const float ROTATION_SPEED = 1.0f; // rads per second
 	m_angle += ROTATION_SPEED * deltaTime;
+
+	// FPS counter (smoothed)
+	float unscaledDt = app.GetUnscaledDeltaTime();
+	if (unscaledDt > 0.0f)
+	{
+		m_fpsSmooth = m_fpsSmooth * 0.95f + (1.0f / unscaledDt) * 0.05f;
+#ifdef _DEBUG
+		char fpsText[64];
+		sprintf_s(fpsText, "%.0f FPS (%.2f ms)", m_fpsSmooth, unscaledDt * 1000.0f);
+		std::cout << fpsText << std::endl;
+#endif
 	}
 }
 

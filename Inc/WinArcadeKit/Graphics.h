@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <d3d11.h>
+#include <wincodec.h>
 #include <DirectXMath.h>
 #include <wrl/client.h>
 
@@ -9,6 +10,7 @@ namespace wak
 {
 	struct Vertex;
 	class ImmediateMode;
+	class Texture;
 
     class Graphics
     {
@@ -28,6 +30,10 @@ namespace wak
         void SetModelMatrix(DirectX::XMMATRIX transform);
         void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
         void SetProjectionMatrix(DirectX::XMMATRIX projectionMatrix);
+
+        // Texture loading
+        Texture* LoadTexture(const wchar_t* filename);
+        ID3D11Device* GetDevice() const;
 	    
     private:
         Graphics() = default;
@@ -40,6 +46,7 @@ namespace wak
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTarget;
 
         ImmediateMode* m_immediateMode = nullptr;
+        Microsoft::WRL::ComPtr<IWICImagingFactory> m_wicFactory;
 
         FLOAT m_width = 0.0f;
         FLOAT m_height = 0.0f;

@@ -43,6 +43,8 @@ inc/WinArcadeKit/Graphics.h
 inc/WinArcadeKit/Keyboard.h
 inc/WinArcadeKit/Vertex.h
 inc/WinArcadeKit/Time.h
+inc/WinArcadeKit/Texture.h
+src/Texture.cpp
 src/Shaders/VertexShader.hlsl
 src/Shaders/PixelShader.hlsl
 ${SHADER_OUTPUT_DIR}/VertexShader.h
@@ -57,7 +59,7 @@ PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${SHADER_OUTPUT_DIR}
 )
 target_compile_options(WinArcadeKit PUBLIC /utf-8)
 target_compile_definitions(WinArcadeKit PUBLIC UNICODE _UNICODE)
-target_link_libraries(WinArcadeKit PUBLIC d3d11.lib)
+target_link_libraries(WinArcadeKit PUBLIC d3d11.lib windowscodecs.lib ole32.lib)
 
 # Sandbox
 add_subdirectory(examples/Sandbox)

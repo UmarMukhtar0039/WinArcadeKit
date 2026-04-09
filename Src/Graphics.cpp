@@ -1,4 +1,5 @@
 #include "WinArcadeKit/Graphics.h"
+#include "WinArcadeKit/Texture.h"
 
 #include <cmath>
 #include <iterator>
@@ -100,6 +101,19 @@ namespace wak
         d3dDevice->CreateRasterizerState(&rasterDesc, &rasterState);
         d3dDeviceContext->RSSetState(rasterState.Get());
 
+        // Initialize COM for WIC
+        HRESULT hrCom = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        if (FAILED(hrCom) && hrCom != S_FALSE && hrCom != RPC_E_CHANGED_MODE)
+            return nullptr;
+
+        // Create WIC factory for texture loading
+        ComPtr<IWICImagingFactory> wicFactory;
+        HRESULT hrWic = CoCreateInstance(
+            CLSID_WICImagingFactory, nullptr,
+            CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wicFactory));
+        if (FAILED(hrWic))
+            return nullptr;
+
 		ImmediateMode* immediateMode = ImmediateMode::Create(d3dDevice.Get(), d3dDeviceContext.Get(), width, height);
         if (!immediateMode)
         {
@@ -113,6 +127,7 @@ namespace wak
         graphics->m_swapChain = std::move(dxgiSwapChain);
         graphics->m_renderTarget = std::move(renderTarget);
 		graphics->m_immediateMode = immediateMode;
+		graphics->m_wicFactory = std::move(wicFactory);
 		graphics->m_width = width;
 		graphics->m_height = height;
 		return graphics; // TODO: wrap this in a unique_ptr once we decide on the ownership model for Graphics.
@@ -122,7 +137,10 @@ namespace wak
     {
 		ImmediateMode::Destroy(gfx->m_immediateMode);
 		gfx->m_immediateMode = nullptr;
-        
+
+        gfx->m_wicFactory.Reset();
+        CoUninitialize();
+
         delete gfx;
     }
     
@@ -168,5 +186,15 @@ namespace wak
     void Graphics::SetProjectionMatrix(XMMATRIX projectionMatrix)
     {
         m_immediateMode->SetProjectionMatrix(projectionMatrix);
+    }
+
+    Texture* Graphics::LoadTexture(const wchar_t* filename)
+    {
+        return Texture::Create(m_device.Get(), m_wicFactory.Get(), filename);
+    }
+
+    ID3D11Device* Graphics::GetDevice() const
+    {
+        return m_device.Get();
     }
 }
