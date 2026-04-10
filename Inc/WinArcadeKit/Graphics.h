@@ -30,6 +30,7 @@ namespace wak
         void SetModelMatrix(DirectX::XMMATRIX transform);
         void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
         void SetProjectionMatrix(DirectX::XMMATRIX projectionMatrix);
+        void DestroyTexture(wak::Texture* texture);
 
         // Texture loading
         Texture* LoadTexture(const wchar_t* filename);

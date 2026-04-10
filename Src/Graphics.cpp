@@ -192,6 +192,11 @@ namespace wak
     {
         return Texture::Create(m_device.Get(), m_wicFactory.Get(), filename);
     }
+  
+    void Graphics::DestroyTexture(wak::Texture* texture)
+    {
+        Texture::Destroy(texture); // TODO: I think I should make the api a little better, this smells. Put Destroy in Graphics?
+    }
 
     ID3D11Device* Graphics::GetDevice() const
     {

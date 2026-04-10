@@ -28,7 +28,7 @@ void TestState::OnActivate(wak::Application& app, wak::StateArgs& args)
 
 void TestState::OnDeactivate(wak::Application& app)
 {
-    wak::Texture::Destroy(m_testTexture); // TODO: I think I should make the api a little better, this smells. Put Destroy in Graphics?
+    app.GetGraphics().DestroyTexture(m_testTexture);
     m_testTexture = nullptr;
 }
 
