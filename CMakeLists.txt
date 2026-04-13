@@ -27,6 +27,24 @@ add_custom_command(
     COMMENT "Compiling PixelShader.hlsl -> PixelShader.h"
 )
 
+add_custom_command(
+    OUTPUT ${SHADER_OUTPUT_DIR}/TexturedVertexShader.h
+    COMMAND fxc /nologo /T vs_5_0 /E main /Vn g_TexturedVertexShaderBytecode
+        /Fh "${SHADER_OUTPUT_DIR}/TexturedVertexShader.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders/TexturedVertexShader.hlsl"
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders/TexturedVertexShader.hlsl
+    COMMENT "Compiling TexturedVertexShader.hlsl -> TexturedVertexShader.h"
+)
+
+add_custom_command(
+    OUTPUT ${SHADER_OUTPUT_DIR}/TexturedPixelShader.h
+    COMMAND fxc /nologo /T ps_5_0 /E main /Vn g_TexturedPixelShaderBytecode
+        /Fh "${SHADER_OUTPUT_DIR}/TexturedPixelShader.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders/TexturedPixelShader.hlsl"
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders/TexturedPixelShader.hlsl
+    COMMENT "Compiling TexturedPixelShader.hlsl -> TexturedPixelShader.h"
+)
+
 # WinArcadeKit static library
 add_library(WinArcadeKit STATIC
 src/Application.cpp
@@ -47,11 +65,21 @@ inc/WinArcadeKit/Texture.h
 src/Texture.cpp
 src/Shaders/VertexShader.hlsl
 src/Shaders/PixelShader.hlsl
+src/Shaders/TexturedVertexShader.hlsl
+src/Shaders/TexturedPixelShader.hlsl
 ${SHADER_OUTPUT_DIR}/VertexShader.h
 ${SHADER_OUTPUT_DIR}/PixelShader.h
+${SHADER_OUTPUT_DIR}/TexturedVertexShader.h
+${SHADER_OUTPUT_DIR}/TexturedPixelShader.h
 )
 # Don't let VS compile .hlsl files with its built-in HLSL compiler
-set_source_files_properties(src/Shaders/VertexShader.hlsl src/Shaders/PixelShader.hlsl PROPERTIES VS_TOOL_OVERRIDE "None")
+set_source_files_properties(
+    src/Shaders/VertexShader.hlsl
+    src/Shaders/PixelShader.hlsl
+    src/Shaders/TexturedVertexShader.hlsl
+    src/Shaders/TexturedPixelShader.hlsl
+    PROPERTIES VS_TOOL_OVERRIDE "None"
+)
 
 target_include_directories(WinArcadeKit
 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc

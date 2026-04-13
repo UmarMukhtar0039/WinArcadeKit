@@ -195,7 +195,7 @@ namespace wak
   
     void Graphics::DestroyTexture(wak::Texture* texture)
     {
-        Texture::Destroy(texture); // TODO: I think I should make the api a little better, this smells. Put Destroy in Graphics?
+        Texture::Destroy(texture);
     }
 
     ID3D11Device* Graphics::GetDevice() const
