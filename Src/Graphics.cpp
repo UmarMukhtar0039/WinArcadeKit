@@ -173,6 +173,12 @@ namespace wak
 		m_immediateMode->Draw(topology, vertices, count);
     }
 
+    void Graphics::DrawTextured(D3D11_PRIMITIVE_TOPOLOGY topology, const TexturedVertex* vertices, unsigned int count, Texture* texture)
+    {
+        if (!texture) return;
+        m_immediateMode->DrawTextured(topology, vertices, count, texture->GetSRV());
+    }
+
     void Graphics::SetModelMatrix(XMMATRIX transform)
     {
         m_immediateMode->SetModelMatrix(transform);
