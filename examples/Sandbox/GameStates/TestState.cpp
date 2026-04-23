@@ -17,7 +17,7 @@ using namespace DirectX;
 
 void TestState::OnActivate(wak::Application& app, wak::StateArgs& args)
 {
-    m_testTexture = app.GetGraphics().LoadTexture(L"D:\\PersonalProjects\\GamesFromScratch\\WinArcadeKit\\build\\examples\\Sandbox\\Debug\\lamp.png"); // TODO: Need to fixup the working directory?
+    m_testTexture = app.GetGraphics().LoadTexture(L"assets/test.png");
 #ifdef _DEBUG
     if (m_testTexture)
         std::cout << "Texture loaded: " << m_testTexture->GetWidth() << "x" << m_testTexture->GetHeight() << std::endl;
