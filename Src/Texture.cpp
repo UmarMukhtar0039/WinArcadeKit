@@ -12,7 +12,7 @@ namespace wak
         ComPtr<IWICBitmapDecoder> decoder;
         HRESULT hr = wicFactory->CreateDecoderFromFilename(
             filename,
-            nullptr,
+            NULL,
             GENERIC_READ,
             WICDecodeMetadataCacheOnLoad,
             &decoder

@@ -101,18 +101,18 @@ void TestState::OnRender(wak::Application& app)
 	gfx.SetModelMatrix(transform);
     gfx.Draw(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertices, std::size(vertices));
 
-    // Textured quad (two triangles forming a rectangle)
+    // Textured quad
     if (m_testTexture)
     {
         const float halfW = static_cast<float>(m_testTexture->GetWidth()) * 0.5f;
         const float halfH = static_cast<float>(m_testTexture->GetHeight()) * 0.5f;
 
         const wak::TexturedVertex quad[] = {
-            // Triangle 1: top-left, bottom-left, top-right
+            // Triangle 1
             { -halfW, -halfH, 0.0f, 0.0f, 255, 255, 255, 255 },
             { -halfW,  halfH, 0.0f, 1.0f, 255, 255, 255, 255 },
             {  halfW, -halfH, 1.0f, 0.0f, 255, 255, 255, 255 },
-            // Triangle 2: top-right, bottom-left, bottom-right
+            // Triangle 2
             {  halfW, -halfH, 1.0f, 0.0f, 255, 255, 255, 255 },
             { -halfW,  halfH, 0.0f, 1.0f, 255, 255, 255, 255 },
             {  halfW,  halfH, 1.0f, 1.0f, 255, 255, 255, 255 },

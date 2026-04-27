@@ -102,17 +102,20 @@ namespace wak
         d3dDeviceContext->RSSetState(rasterState.Get());
 
         // Initialize COM for WIC
-        HRESULT hrCom = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        HRESULT hrCom = CoInitializeEx(NULL, COINIT_MULTITHREADED);
         if (FAILED(hrCom) && hrCom != S_FALSE && hrCom != RPC_E_CHANGED_MODE)
             return nullptr;
 
         // Create WIC factory for texture loading
         ComPtr<IWICImagingFactory> wicFactory;
         HRESULT hrWic = CoCreateInstance(
-            CLSID_WICImagingFactory, nullptr,
-            CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wicFactory));
-        if (FAILED(hrWic))
-            return nullptr;
+            CLSID_WICImagingFactory, 
+            NULL,
+            CLSCTX_INPROC_SERVER, 
+            IID_PPV_ARGS(&wicFactory)
+        );
+
+        if (FAILED(hrWic)) return nullptr;
 
 		ImmediateMode* immediateMode = ImmediateMode::Create(d3dDevice.Get(), d3dDeviceContext.Get(), width, height);
         if (!immediateMode)

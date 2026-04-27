@@ -15,6 +15,7 @@ target_compile_definitions(Sandbox PRIVATE
     $<$<CONFIG:Release>:WAK_DIST>
 )
 
+####### This is just a hack. WE are gonna have to change it in future by having some kind of asset loader.
 # Copy assets/ next to the Sandbox exe after every build
 add_custom_command(TARGET Sandbox POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
