@@ -20,4 +20,5 @@ private:
 	float y = 360.0f;
 	float m_fpsSmooth = 0.0f;
 	wak::Texture* m_testTexture = nullptr;
+	wak::Texture* m_testTextureBlending = nullptr;
 };

@@ -18,6 +18,8 @@ using namespace DirectX;
 void TestState::OnActivate(wak::Application& app, wak::StateArgs& args)
 {
     m_testTexture = app.GetGraphics().LoadTexture(L"assets/test.png");
+    m_testTextureBlending = app.GetGraphics().LoadTexture(L"assets/lamp.png");
+
 #ifdef _DEBUG
     if (m_testTexture)
         std::cout << "Texture loaded: " << m_testTexture->GetWidth() << "x" << m_testTexture->GetHeight() << std::endl;
@@ -30,6 +32,9 @@ void TestState::OnDeactivate(wak::Application& app)
 {
     app.GetGraphics().DestroyTexture(m_testTexture);
     m_testTexture = nullptr;
+    
+    app.GetGraphics().DestroyTexture(m_testTextureBlending);
+    m_testTextureBlending = nullptr;
 }
 
 void TestState::OnUpdate(wak::Application& app, float deltaTime)
@@ -66,7 +71,7 @@ void TestState::OnUpdate(wak::Application& app, float deltaTime)
 #ifdef _DEBUG
 		char fpsText[64];
 		sprintf_s(fpsText, "%.0f FPS (%.2f ms)", m_fpsSmooth, unscaledDt * 1000.0f);
-		std::cout << fpsText << std::endl;
+		//std::cout << fpsText << std::endl;
 #endif
 	}
 }
@@ -101,26 +106,7 @@ void TestState::OnRender(wak::Application& app)
 	gfx.SetModelMatrix(transform);
     gfx.Draw(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertices, std::size(vertices));
 
-    // Textured quad
-    if (m_testTexture)
-    {
-        const float halfW = static_cast<float>(m_testTexture->GetWidth()) * 0.5f;
-        const float halfH = static_cast<float>(m_testTexture->GetHeight()) * 0.5f;
-
-        const wak::TexturedVertex quad[] = {
-            // Triangle 1
-            { -halfW, -halfH, 0.0f, 0.0f, 255, 255, 255, 255 },
-            { -halfW,  halfH, 0.0f, 1.0f, 255, 255, 255, 255 },
-            {  halfW, -halfH, 1.0f, 0.0f, 255, 255, 255, 255 },
-            // Triangle 2
-            {  halfW, -halfH, 1.0f, 0.0f, 255, 255, 255, 255 },
-            { -halfW,  halfH, 0.0f, 1.0f, 255, 255, 255, 255 },
-            {  halfW,  halfH, 1.0f, 1.0f, 255, 255, 255, 255 },
-        };
-
-        // Position the quad to the right of the hexagon
-        XMMATRIX quadTransform = XMMatrixScaling(2.0f, 2.0f, 1.0f) * XMMatrixTranslation(900.0f, 360.0f, 0.0f) ;
-        gfx.SetModelMatrix(quadTransform);
-        gfx.DrawTextured(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, quad, std::size(quad), m_testTexture);
-    }
+    // Textured quads
+    gfx.DrawSprite(m_testTexture,         { 900.0f, 360.0f }, { 2.0f, 2.0f });
+    gfx.DrawSprite(m_testTextureBlending, { 900.0f, 360.0f }, { 2.0f, 2.0f });
 }

@@ -182,6 +182,35 @@ namespace wak
         m_immediateMode->DrawTextured(topology, vertices, count, texture->GetSRV());
     }
 
+    void Graphics::DrawSprite(Texture* texture, XMFLOAT2 position, XMFLOAT2 scale, float rotation, XMFLOAT4 tint)
+    {
+        if (!texture) return;
+
+        const float halfW = static_cast<float>(texture->GetWidth())  * 0.5f;
+        const float halfH = static_cast<float>(texture->GetHeight()) * 0.5f;
+
+        const auto r = static_cast<unsigned char>(tint.x * 255.0f);
+        const auto g = static_cast<unsigned char>(tint.y * 255.0f);
+        const auto b = static_cast<unsigned char>(tint.z * 255.0f);
+        const auto a = static_cast<unsigned char>(tint.w * 255.0f);
+
+        const TexturedVertex quad[] = {
+            { -halfW, -halfH, 0.0f, 0.0f, r, g, b, a },
+            { -halfW,  halfH, 0.0f, 1.0f, r, g, b, a },
+            {  halfW, -halfH, 1.0f, 0.0f, r, g, b, a },
+            {  halfW, -halfH, 1.0f, 0.0f, r, g, b, a },
+            { -halfW,  halfH, 0.0f, 1.0f, r, g, b, a },
+            {  halfW,  halfH, 1.0f, 1.0f, r, g, b, a },
+        };
+
+        const XMMATRIX transform = XMMatrixScaling(scale.x, scale.y, 1.0f)
+                                 * XMMatrixRotationZ(rotation)
+                                 * XMMatrixTranslation(position.x, position.y, 0.0f);
+
+        SetModelMatrix(transform);
+        DrawTextured(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, quad, 6, texture);
+    }
+
     void Graphics::SetModelMatrix(XMMATRIX transform)
     {
         m_immediateMode->SetModelMatrix(transform);

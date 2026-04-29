@@ -29,6 +29,15 @@ namespace wak
         // Drawing api
         void Draw(D3D11_PRIMITIVE_TOPOLOGY topology, const Vertex* vertices, unsigned int count);
         void DrawTextured(D3D11_PRIMITIVE_TOPOLOGY topology, const TexturedVertex* vertices, unsigned int count, Texture* texture);
+
+		// TODO: This is just a convenience method for drawing sprites to avoid extra plumbing everytime we need to draw a texture. We'll have a proper Sprite batching in future.
+        void DrawSprite(
+            Texture* texture,
+            DirectX::XMFLOAT2 position,
+            DirectX::XMFLOAT2 scale = { 1.0f, 1.0f },
+            float rotation = 0.0f,
+            DirectX::XMFLOAT4 tint = { 1.0f, 1.0f, 1.0f, 1.0f });
+
         void SetModelMatrix(DirectX::XMMATRIX transform);
         void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
         void SetProjectionMatrix(DirectX::XMMATRIX projectionMatrix);
