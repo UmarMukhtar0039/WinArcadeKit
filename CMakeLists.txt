@@ -54,11 +54,13 @@ src/Keyboard.cpp
 src/Graphics.cpp
 src/ImmediateMode.h
 src/ImmediateMode.cpp
+src/SpriteBatch.cpp
 inc/WinArcadeKit/Application.h
 inc/WinArcadeKit/EntryPoint.h
 inc/WinArcadeKit/GameState.h
 inc/WinArcadeKit/Graphics.h
 inc/WinArcadeKit/Keyboard.h
+inc/WinArcadeKit/SpriteBatch.h
 inc/WinArcadeKit/Vertex.h
 inc/WinArcadeKit/Time.h
 inc/WinArcadeKit/Texture.h
