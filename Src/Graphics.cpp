@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 
 #include "WinArcadeKit/Vertex.h"
+#include "WinArcadeKit/SpriteBatch.h"
 #include "ImmediateMode.h"
 
 using namespace DirectX;
@@ -124,7 +125,9 @@ namespace wak
             return nullptr;
         }
 
+
         Graphics* graphics = new Graphics();
+		SpriteBatch* spriteBatch = new SpriteBatch(graphics); // TODO: we should probably wrap this in a unique_ptr and store it in Graphics once we decide on the ownership model for SpriteBatch. For now, we'll just create it and let the Application class manage its lifetime.
         graphics->m_device = std::move(d3dDevice);
         graphics->m_deviceContext = std::move(d3dDeviceContext);
         graphics->m_swapChain = std::move(dxgiSwapChain);
@@ -133,6 +136,7 @@ namespace wak
 		graphics->m_wicFactory = std::move(wicFactory);
 		graphics->m_width = width;
 		graphics->m_height = height;
+		graphics->m_spriteBatch = spriteBatch;
 		return graphics; // TODO: wrap this in a unique_ptr once we decide on the ownership model for Graphics.
     }
 
@@ -140,6 +144,8 @@ namespace wak
     {
 		ImmediateMode::Destroy(gfx->m_immediateMode);
 		gfx->m_immediateMode = nullptr;
+
+		delete gfx->m_spriteBatch;
 
         gfx->m_wicFactory.Reset();
         CoUninitialize();
@@ -186,29 +192,10 @@ namespace wak
     {
         if (!texture) return;
 
-        const float halfW = static_cast<float>(texture->GetWidth())  * 0.5f;
-        const float halfH = static_cast<float>(texture->GetHeight()) * 0.5f;
-
-        const auto r = static_cast<unsigned char>(tint.x * 255.0f);
-        const auto g = static_cast<unsigned char>(tint.y * 255.0f);
-        const auto b = static_cast<unsigned char>(tint.z * 255.0f);
-        const auto a = static_cast<unsigned char>(tint.w * 255.0f);
-
-        const TexturedVertex quad[] = {
-            { -halfW, -halfH, 0.0f, 0.0f, r, g, b, a },
-            { -halfW,  halfH, 0.0f, 1.0f, r, g, b, a },
-            {  halfW, -halfH, 1.0f, 0.0f, r, g, b, a },
-            {  halfW, -halfH, 1.0f, 0.0f, r, g, b, a },
-            { -halfW,  halfH, 0.0f, 1.0f, r, g, b, a },
-            {  halfW,  halfH, 1.0f, 1.0f, r, g, b, a },
-        };
-
-        const XMMATRIX transform = XMMatrixScaling(scale.x, scale.y, 1.0f)
-                                 * XMMatrixRotationZ(rotation)
-                                 * XMMatrixTranslation(position.x, position.y, 0.0f);
-
-        SetModelMatrix(transform);
-        DrawTextured(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, quad, 6, texture);
+		// TODO: This is not actually batching anything right now since we flush on every draw call, but this is just to get something working for now. We'll implement proper batching in future iterations.
+        m_spriteBatch->Begin();
+		m_spriteBatch->Draw(texture, position, scale, rotation, tint);
+        m_spriteBatch->End();
     }
 
     void Graphics::SetModelMatrix(XMMATRIX transform)

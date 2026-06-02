@@ -7,7 +7,7 @@ using namespace DirectX;
 
 namespace wak
 {
-    SpriteBatch::SpriteBatch(Graphics& graphics)
+    SpriteBatch::SpriteBatch(Graphics* graphics)
         : m_gfx(graphics)
     {
     }
@@ -17,7 +17,12 @@ namespace wak
         m_quadCount      = 0;
         m_currentTexture = nullptr;
 
-        m_gfx.SetModelMatrix(XMMatrixIdentity());
+        m_gfx->SetModelMatrix(XMMatrixIdentity());
+    }
+
+    void SpriteBatch::End()
+    {
+        Flush();
     }
 
     void SpriteBatch::Draw(Texture* texture, XMFLOAT2 position, XMFLOAT2 scale, float rotation, XMFLOAT4 tint)
@@ -75,17 +80,12 @@ namespace wak
         ++m_quadCount;
     }
 
-    void SpriteBatch::End()
-    {
-        Flush();
-    }
-
     void SpriteBatch::Flush()
     {
         if (m_quadCount == 0 || !m_currentTexture)
             return;
 
-        m_gfx.DrawTextured(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+        m_gfx->DrawTextured(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
                            m_vertices,
                            m_quadCount * VERTS_PER_QUAD,
                            m_currentTexture);

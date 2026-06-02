@@ -12,6 +12,7 @@ namespace wak
 	struct TexturedVertex;
 	class ImmediateMode;
 	class Texture;
+    class SpriteBatch;
 
     class Graphics
     {
@@ -59,6 +60,8 @@ namespace wak
 
         ImmediateMode* m_immediateMode = nullptr;
         Microsoft::WRL::ComPtr<IWICImagingFactory> m_wicFactory;
+
+		SpriteBatch* m_spriteBatch = nullptr;
 
         FLOAT m_width = 0.0f;
         FLOAT m_height = 0.0f;

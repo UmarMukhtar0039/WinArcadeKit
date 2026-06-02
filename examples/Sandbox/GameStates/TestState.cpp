@@ -17,7 +17,7 @@ using namespace DirectX;
 
 void TestState::OnActivate(wak::Application& app, wak::StateArgs& args)
 {
-    m_testTexture = app.GetGraphics().LoadTexture(L"assets/test.png");
+    m_testTexture = app.GetGraphics().LoadTexture(L"assets/characterSprite.png");
     m_testTextureBlending = app.GetGraphics().LoadTexture(L"assets/lamp.png");
 
 #ifdef _DEBUG
@@ -107,6 +107,7 @@ void TestState::OnRender(wak::Application& app)
     gfx.Draw(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, vertices, std::size(vertices));
 
     // Textured quads
-    gfx.DrawSprite(m_testTexture,         { 900.0f, 360.0f }, { 2.0f, 2.0f });
+    gfx.DrawSprite(m_testTexture,         { 900.0f, 360.0f }, { 0.5f, 0.5f });
     gfx.DrawSprite(m_testTextureBlending, { 900.0f, 360.0f }, { 2.0f, 2.0f });
 }
+
